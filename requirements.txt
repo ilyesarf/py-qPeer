@@ -1,0 +1,5 @@
+requests
+uuid
+pycryptodome
+pyaes
+python-secrets
