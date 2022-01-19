@@ -1,8 +1,9 @@
+import sys
+sys.path.insert(1, 'qpeer')
 from node import *
 from errors import *
 from multiprocessing import Process
 import socket
-import sys
 import _thread
 
 server = Server()

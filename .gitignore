@@ -2,3 +2,4 @@ test/
 __pycache__/
 *.pem
 *.pkl
+*.sh
