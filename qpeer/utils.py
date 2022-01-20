@@ -302,7 +302,6 @@ class Utils:
     if len(self.peers) <= 5:
       for peer in self.peers:
         peerid = peer[0]
-        peerid = peer[0]
         temp_peer = self.return_temp_peer(peerid)
         peers.append(temp_peer)
     else:
@@ -327,7 +326,7 @@ class Utils:
     un_payload = b64decode(payload)
     peers = json.loads(self.AES_decrypt(un_payload, iv, key).decode())
     for peer in peers:
-      if self.check_peer(peer[0]) == False and self.check_peer(peer[0],self.temp_peers) == False:
+      if self.check_peer(peer[0]) == False and self.check_peer(peer[0],self.temp_peers) == False and peer[0] != self.peerid:
         self.temp_peers.append(peer)
       else:
         raise PeersError

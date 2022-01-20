@@ -5,6 +5,7 @@ from errors import *
 from multiprocessing import Process
 import socket
 import _thread
+import random
 
 server = Server()
 def run_server():
@@ -22,12 +23,34 @@ def run_server():
 client = Client()
 
 def run_client():
-	host = '172.17.0.1'
-	port = 1691
-	try:
-		client.setup(host, port)
-	except Exception as e:
-		print(e)
+	while True:
+		
+		if len(client.peers) > 0:
+			
+			if len(client.temp_peers) > 0:
+				peer = random.choice(client.temp_peers)
+				try:
+					client.setup(peer[1], peer[2])
+					client.temp_peers.remove(peer)
+				except Exception as e:
+					print(e)
+			else:
+				peer = utils.decrypt_peer(random.choice(client.peers))
+				peerinfo = peer[1]
+				try:
+					client.setup(peerinfo[1], peerinfo[2])
+				except Exception as e:
+					print(e)
+
+		else: #Bootstrap
+			ip = '' #Set the supernode ip
+			port = 1691
+			try:
+				client.setup(ip, port)
+			except Exception as e:
+				print(e)
+
+		
 
 if __name__ == '__main__':
 	"""print("Clt Running")
