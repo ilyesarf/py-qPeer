@@ -41,3 +41,5 @@ class InitError(Exception):
 class IpError(Exception):
   pass
 
+class IdError(Exception):
+  pass

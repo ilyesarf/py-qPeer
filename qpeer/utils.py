@@ -22,14 +22,34 @@ import random
 
 class Utils:
   def __init__(self):
-    self.peerid = str(uuid4()).replace('-', '')
-  
+    #Setting RSA key pairs
     if os.path.isfile('privkey.pem'):
       self.key, self.pubkey_pem = self.RSA_read()
     else:
       self.RSA_write()
       self.key, self.pubkey_pem = self.RSA_read()
 
+    #Setting local peer
+    if os.path.isfile('lpeer.pkl'):
+      self.lpeer = self.read_peers('lpeer.pkl')[0] #Reading lpeer info
+      self.peerid = self.lpeer[0]
+      self.role = self.lpeer[1]
+
+      if self.lpeer[2] == self.getmyip():
+        self.peerip = self.lpeer[2]
+      else:
+        self.peerip = self.getmyip()
+        
+      self.port = self.lpeer[3]
+    else:
+      self.peerid = hashlib.md5(self.pubkey_pem).hexdigest()
+      self.peerip = self.getmyip()
+      self.role = 0
+      self.port = 1691
+      self.lpeer = [self.peerid, self.role, self.peerip, self.port]
+      self.write_peers(self.lpeer, 'lpeer.pkl') #Saving local peer for future use
+
+    #Getting previous peers
     if os.path.isfile('peers.pkl'):
       if len(open('peers.pkl', 'rb').read()) > 1:
         self.peers = self.read_peers()
@@ -40,7 +60,6 @@ class Utils:
 
     self.temp_peers = list()
     self.offline_peers = list()
-    #self.peerinfo = list()
 
   def getmyip(self): 
     ip = requests.get('https://api.ipify.org').content.decode('utf8')
@@ -49,7 +68,7 @@ class Utils:
     else:
       raise IpError
 
-  def RSA_keygen(self):
+  def RSA_keygen(self): #Generating RSA key pairs
     random_gen = Random.new().read
     key = RSA.generate(2048, random_gen)
     privkey = key.exportKey('PEM')
@@ -57,7 +76,7 @@ class Utils:
     
     return privkey, pubkey
 
-  def RSA_write(self):
+  def RSA_write(self): #Saving RSA key pairs
     privkey, pubkey = self.RSA_keygen()
     
     with open('privkey.pem', 'wb') as privfile:
@@ -66,7 +85,7 @@ class Utils:
     with open('pubkey.pem', 'wb') as pubfile:
       pubfile.write(pubkey)
 
-  def RSA_read(self):
+  def RSA_read(self): #Getting RSA key pairs
     with open('privkey.pem', 'rb') as privfile:
       privkey = RSA.importKey(privfile.read())
 
@@ -75,7 +94,7 @@ class Utils:
 
     return privkey, pubkey
 
-  def RSA_encrypt(self, msg, pubkey_pem=None): 
+  def RSA_encrypt(self, msg, pubkey_pem=None): #Encryption with RSA (penc)
     if pubkey_pem == None:
       pubkey = RSA.importKey(self.pubkey_pem)
     else:
@@ -86,31 +105,31 @@ class Utils:
     
     return enc_msg
   
-  def RSA_decrypt(self, enc_msg):
+  def RSA_decrypt(self, enc_msg): #Decrytion with RSA (dpenc)
     cipher = PKCS1_OAEP.new(self.key)
     msg = cipher.decrypt(enc_msg)
    
     return msg
   
-  def AES_keygen(self):
+  def AES_keygen(self): #Generating AES key & iv
     iv = secrets.randbits(256)
     key = hashlib.md5(os.urandom(32)).hexdigest()
 
     return iv, key.encode()
 
-  def AES_encrypt(self, msg, iv, key):    
+  def AES_encrypt(self, msg, iv, key): #Encryption with AES (kenc)
     cipher = pyaes.AESModeOfOperationCTR(key, pyaes.Counter(iv))
     enc_msg = cipher.encrypt(msg)
 
     return enc_msg
 
-  def AES_decrypt(self, enc_msg, iv, key):    
+  def AES_decrypt(self, enc_msg, iv, key): #Decryption with AES (dkenc)
     cipher = pyaes.AESModeOfOperationCTR(key, pyaes.Counter(iv))
     msg = cipher.decrypt(enc_msg)
 
     return msg
 
-  def greet(self):    
+  def greet(self):
     msg = 'greet'
     payload = struct.pack('<32s5s', self.peerid.encode(), msg.encode())
 
@@ -129,7 +148,8 @@ class Utils:
     msg = 'ping'
     return msg.encode()
 
-  def init(self):
+  #Setting up secure connection & Exchanging RSA & AES keys
+  def init(self): 
     payload = struct.pack('<32s600s', self.peerid.encode(), b64encode(self.pubkey_pem))
     return payload
 
@@ -148,11 +168,10 @@ class Utils:
     
     return iv,key
 
+  #Exchaning peerinfo
+
   def peerinfo(self):
-    role = 0
-    peerip = self.getmyip()
-    port = 1691
-    payload = struct.pack('<i16sh600s',role,peerip.encode(),port,b64encode(self.pubkey_pem))
+    payload = struct.pack('<i16sh600s',self.role,self.peerip.encode(),self.port,b64encode(self.pubkey_pem))
     
     return payload
 
@@ -182,6 +201,7 @@ class Utils:
 
     return peerinfo
 
+  #Saving all peer info
   def save_lpeer(self,peerid,peerinfo,iv,key): 
     enc_peerinfo = self.AES_encrypt(json.dumps(peerinfo),int(iv),key)
     enc_key = self.RSA_encrypt(key)
@@ -192,11 +212,11 @@ class Utils:
     else:
       pass
 
-  def write_peers(self, peer, file=open('peers.pkl', 'ab')): #Save peers to a file
-    pickle.dump(peer, file)
+  def write_peers(self, peer, file='peers.pkl'): #Save peers to a file
+    pickle.dump(peer, open(file, 'ab'))
 
-  def read_peers(self): #Read peers from file 
-    peers = [pickle.load(open('peers.pkl', 'rb'))]
+  def read_peers(self,file='peers.pkl'): #Read peers from file 
+    peers = [pickle.load(open(file, 'rb'))]
     return peers
 
   def find_peer(self,peerid,peerlist=None): #Return Peer by peerid
@@ -215,19 +235,19 @@ class Utils:
         else:
           continue
 
-  def decrypt_key(self, peer):
+  def decrypt_key(self, peer): #Decrypting AES key (dpenc)
     enc_key = peer[-1]
     key = self.RSA_decrypt(b64decode(enc_key))
     
     return key
 
-  def decrypt_peerinfo(self, key, peer):
+  def decrypt_peerinfo(self, key, peer): #Decrypting peerinfo (dkenc)
     enc_peerinfo = peer[1] 
     peerinfo = self.AES_decrypt(b64decode(enc_peerinfo),int(peer[2]),key)
 
     return json.loads(peerinfo)
 
-  def decrypt_peer(self, peerid, peerlist=None):
+  def decrypt_peer(self, peerid, peerlist=None): #Returning all peer info
     enc_peer = self.find_peer(peerid, peerlist)
     peerid = enc_peer[0]
     iv = enc_peer[2]
@@ -236,7 +256,7 @@ class Utils:
 
     return [peerid, peerinfo, iv, key]
 
-  def return_temp_peer(self, peerid):
+  def return_temp_peer(self, peerid): #Sending specific peer info for peer discovery
     peer = self.decrypt_peer(peerid)
     peerinfo = peer[1]
     ip, port = peerinfo[1:3]
@@ -294,7 +314,8 @@ class Utils:
             pass
     return peers
 
-  def share_peers(self,iv,key):
+  #Exchaning peers
+  def share_peers(self,iv,key): 
     jsonized = json.dumps(self.return_peers())
     payload = b64encode(self.AES_encrypt(jsonized.encode(), iv, key))
 
@@ -308,3 +329,7 @@ class Utils:
         self.temp_peers.append(peer)
       else:
         raise PeersError
+
+utils = Utils()
+
+print(utils.peerid)

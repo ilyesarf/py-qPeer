@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 
+from errors import *
 import socket
 import utils
 import struct
+import hashlib
 from base64 import b64encode, b64decode
-from errors import *
 
 utils = utils.Utils()
 
@@ -26,12 +27,20 @@ class Client:
 				return recvd
 			else:
 				raise InitError
+				soc.close()
 
 		def handle_greet():
 			msg_greet = utils.unpack_init(greet())
 			return msg_greet[0],b64decode(msg_greet[1])
 
 		peerid, pubkey_pem = handle_greet()
+		
+		if peerid.decode() == hashlib.md5(pubkey_pem).hexdigest():
+			pass
+		else:
+			raise IdError
+			soc.close()
+
 
 		AES_iv, AES_key = utils.AES_keygen()
 
@@ -42,6 +51,7 @@ class Client:
 				return recvd
 			else:
 				raise PeerinfoError
+				soc.close()
 
 		peerinfo = utils.dkenc_peerinfo(send_key(), AES_iv, AES_key)
 		utils.save_lpeer(str(peerid.decode()),peerinfo,AES_iv,AES_key)
@@ -54,6 +64,7 @@ class Client:
 				return recvd
 			else:
 				raise PeersError
+				soc.close()
 
 		peers = send_peerinfo()
 		utils.save_peers(peers, int(AES_iv), AES_key)
@@ -66,6 +77,7 @@ class Client:
 				soc.close()
 			else:
 				raise ByeError
+				soc.close()
 
 		def send_bye():
 			if len(self.peers) <= 5:
@@ -75,7 +87,6 @@ class Client:
 				send_peers()
 				soc.close()
 		send_bye()
-		print("Done")
 
 	def ping(self, peerid):
 			peer = utils.find_peer(peerid)
@@ -89,9 +100,11 @@ class Client:
 	
 			if soc.recv(2048):
 				return True
+				soc.close()
 			else:
 				raise PingError
-				#utils.remove_peer(peer[0])
+				utils.remove_peer(peer[0])
+				soc.close()
 
 class Server:
 	def __init__(self):
@@ -112,6 +125,7 @@ class Server:
 				return str(peerid.decode())
 			else:
 				raise GreetError
+				conn.close()
 		
 		peerid = greet()
 
@@ -122,6 +136,7 @@ class Server:
 				return recvd
 			else:
 				raise AesError
+				conn.close()
 
 		AES_iv, AES_key = utils.dpenc_AES(init())
 
@@ -132,8 +147,16 @@ class Server:
 				return recvd
 			else:
 				raise PeerinfoError
+				conn.close()
 
 		peerinfo = utils.dkenc_peerinfo(send_peerinfo(), int(AES_iv), AES_key.encode())
+		
+		if peerid.decode() == hashlib.md5(peerinfo[-1]).hexdigest():
+			pass
+		else:
+			raise IdError
+			conn.close()
+
 		utils.save_lpeer(peerid, peerinfo, AES_iv, AES_key.encode())
 
 		def send_peers():
