@@ -30,12 +30,12 @@ def run_client():
 		print(e)
 
 if __name__ == '__main__':
-	"""print("Clt Running")
-				run_client()
-				print("Peers\n")
-				print(client.peers)
-				print("Temp Peers\n")
-				print(client.temp_peers)"""
+	print("Clt Running")
+	run_client()
+	print("Peers\n")
+	print(client.peers)
+	print("Temp Peers\n")
+	print(client.temp_peers)
 	print("Srv running")
 	run_server()
 

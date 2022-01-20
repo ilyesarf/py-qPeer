@@ -151,9 +151,10 @@ class Server:
 
 		peerinfo = utils.dkenc_peerinfo(send_peerinfo(), int(AES_iv), AES_key.encode())
 		
-		if peerid.decode() == hashlib.md5(peerinfo[-1]).hexdigest():
+		if peerid == hashlib.md5(peerinfo[-1].encode()).hexdigest():
 			pass
 		else:
+			print(hashlib.md5(peerinfo[-1].encode()).hexdigest())
 			raise IdError
 			conn.close()
 
