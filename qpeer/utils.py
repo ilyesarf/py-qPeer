@@ -96,12 +96,8 @@ class Utils:
 
     return privkey, pubkey
 
-  def RSA_encrypt(self, msg, pubkey_pem=None): #Encryption with RSA (penc)
-    if pubkey_pem == None:
-      pubkey = RSA.importKey(self.pubkey_pem)
-    else:
-      pubkey = RSA.importKey(pubkey_pem)
-
+  def RSA_encrypt(self, msg, pubkey_pem=self.pubkey_pem): #Encryption with RSA (penc)
+    pubkey = RSA.importKey(pubkey_pem)
     cipher = PKCS1_OAEP.new(pubkey)
     enc_msg = cipher.encrypt(msg)
     
@@ -221,21 +217,13 @@ class Utils:
     peers = [pickle.load(file)]
     return peers
 
-  def find_peer(self,peerid,peerlist=None): #Return Peer by peerid
-    if peerlist == None:
-      for peer in self.peers:
-        if peer[0] == peerid:
-          return peer
-          break
-        else:
-          continue
-    else:
-      for peer in peerlist:
-        if peer[0] == peerid:
-          return peer
-          break
-        else:
-          continue
+  def find_peer(self,peerid,peerlist=self.peers): #Return Peer by peerid
+    for peer in peerlist:
+      if peer[0] == peerid:
+        return peer
+        break
+      else:
+        continue
 
   def decrypt_key(self, peer): #Decrypting AES key (dpenc)
     enc_key = peer[-1]
@@ -249,7 +237,7 @@ class Utils:
 
     return json.loads(peerinfo)
 
-  def decrypt_peer(self, peerid, peerlist=None): #Returning all peer info
+  def decrypt_peer(self, peerid, peerlist=self.peers): #Returning all peer info
     enc_peer = self.find_peer(peerid, peerlist)
     peerid = enc_peer[0]
     iv = enc_peer[2]
@@ -291,12 +279,9 @@ class Utils:
     else:
       pass
 
-  def check_peer(self, peerid, peerlist=None): #Check if peer already exists
-    if peerlist == None:
-      return any(peerid in peer for peer in self.peers)
-    else:
-      return any(peerid in peer for peer in peerlist)
-
+  def check_peer(self, peerid, peerlist=self.peers): #Check if peer already exists
+    return any(peerid in peer for peer in self.peers)
+    
   def return_peers(self):
     peers = []
     if len(self.peers) <= 5:
