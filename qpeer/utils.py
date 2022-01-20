@@ -31,7 +31,7 @@ class Utils:
 
     #Setting local peer
     if os.path.isfile('lpeer.pkl'):
-      self.lpeer = self.read_peers('lpeer.pkl')[0] #Reading lpeer info
+      self.lpeer = self.read_peers(open('lpeer.pkl','rb'))[0] #Reading lpeer info
       self.peerid = self.lpeer[0]
       self.role = self.lpeer[1]
 
@@ -39,7 +39,9 @@ class Utils:
         self.peerip = self.lpeer[2]
       else:
         self.peerip = self.getmyip()
-        
+        self.lpeer[2] = self.peerip
+        self.write_peers(self.lpeer, open('lpeer.pkl','wb')) #Update file
+
       self.port = self.lpeer[3]
     else:
       self.peerid = hashlib.md5(self.pubkey_pem).hexdigest()
@@ -47,7 +49,7 @@ class Utils:
       self.role = 0
       self.port = 1691
       self.lpeer = [self.peerid, self.role, self.peerip, self.port]
-      self.write_peers(self.lpeer, 'lpeer.pkl') #Saving local peer for future use
+      self.write_peers(self.lpeer, open('lpeer.pkl','wb')) #Saving local peer for future use
 
     #Getting previous peers
     if os.path.isfile('peers.pkl'):
@@ -212,11 +214,11 @@ class Utils:
     else:
       pass
 
-  def write_peers(self, peer, file='peers.pkl'): #Save peers to a file
-    pickle.dump(peer, open(file, 'ab'))
+  def write_peers(self, peer, file=open('peers.pkl', 'ab')): #Save peers to a file
+    pickle.dump(peer, file)
 
-  def read_peers(self,file='peers.pkl'): #Read peers from file 
-    peers = [pickle.load(open(file, 'rb'))]
+  def read_peers(self,file=open('peers.pkl', 'rb')): #Read peers from file 
+    peers = [pickle.load(file)]
     return peers
 
   def find_peer(self,peerid,peerlist=None): #Return Peer by peerid
@@ -329,7 +331,3 @@ class Utils:
         self.temp_peers.append(peer)
       else:
         raise PeersError
-
-utils = Utils()
-
-print(utils.peerid)
