@@ -54,7 +54,11 @@ class Client:
 				soc.close()
 
 		peerinfo = utils.dkenc_peerinfo(send_key(), AES_iv, AES_key)
-		utils.save_lpeer(str(peerid.decode()),peerinfo,AES_iv,AES_key)
+		try:
+			utils.save_lpeer(str(peerid.decode()),peerinfo,AES_iv,AES_key)
+		except LpeerError:
+			print('[!] Peer already exists')
+			soc.close()
 
 		def send_peerinfo():
 			payload = utils.kenc_peerinfo(int(AES_iv), AES_key)
@@ -67,7 +71,11 @@ class Client:
 				soc.close()
 
 		peers = send_peerinfo()
-		utils.save_peers(peers, int(AES_iv), AES_key)
+		try:
+			utils.save_peers(peers, int(AES_iv), AES_key)
+		except Exception as e:
+			print(e)
+			soc.close()
 
 		def send_peers():
 			payload = utils.share_peers(int(AES_iv), AES_key)
@@ -88,23 +96,32 @@ class Client:
 				soc.close()
 		send_bye()
 
-	def ping(self, peerid):
-			peer = utils.find_peer(peerid)
+	def ping(self, peerid,peerlist=None):
+			peer = utils.find_peer(peerid, peerlist)
 			peerinfo = utils.decrypt_peer(peer[0])
 			ip, port = peerinfo[2:4]
 			
 			soc = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 			
-			soc.connect((ip,port))
-			soc.send(utils.ping())
-	
-			if soc.recv(2048):
-				return True
-				soc.close()
-			else:
+			try:
+				soc.connect((ip,port))
+				soc.send(utils.ping())
+				if soc.recv(2048):
+					return True
+					soc.close()
+				else:
+					return False
+					raise PingError
+					utils.remove_peer(peer[0])
+					soc.close()
+			except socket.error:
+				return False
 				raise PingError
 				utils.remove_peer(peer[0])
-				soc.close()
+			except PingError:
+				pass
+
+	
 
 class Server:
 	def __init__(self):
@@ -155,15 +172,23 @@ class Server:
 		else:
 			raise IdError
 			conn.close()
-
-		utils.save_lpeer(peerid, peerinfo, AES_iv, AES_key.encode())
+		
+		try:
+			utils.save_lpeer(peerid, peerinfo, AES_iv, AES_key.encode())
+		except LpeerError:
+			print("[!] Peer already exists")
+			connc.lose()
 
 		def send_peers():
 			conn.send(utils.share_peers(int(AES_iv), AES_key.encode()))
 			recvd = conn.recv(8192)
 			if recvd != utils.bye() and len(recvd) > 0:
-				utils.save_peers(recvd, int(AES_iv), AES_key.encode())
-				conn.close()
+				try:
+					utils.save_peers(recvd, int(AES_iv), AES_key.encode())
+					conn.close()
+				except Exception as e:
+					print(e)
+					conn.close()
 			else:
 				conn.send(utils.bye())
 				conn.close()

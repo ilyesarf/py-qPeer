@@ -32,6 +32,9 @@ def run_client():
 				try:
 					client.setup(peer[1], peer[2])
 					client.temp_peers.remove(peer)
+				except socket.error:
+					client.temp_peers.remove(peer)
+					client.offline_peers.append(peer)
 				except Exception as e:
 					print(e)
 			else:
@@ -63,4 +66,3 @@ if __name__ == '__main__':
 	run_server()
 
 
-#TODO: If there's no peers in temp_peers nor peers, start with bootstrap node. Else, pick random peer.
