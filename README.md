@@ -1,4 +1,5 @@
-## A peer-to-peer routing protocol (codded in python) to help you build a network for your dApp and Blockchain.
+# qPeer
+## A peer-to-peer routing protocol (codded in python) to run your decentralized network.
 
 *The first open-source project from a series of decentralized projects under the name of "Quanta"*
 
