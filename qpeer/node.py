@@ -98,8 +98,8 @@ class Client:
 
 	def ping(self, peerid,peerlist=None):
 			peer = utils.find_peer(peerid, peerlist)
-			peerinfo = utils.decrypt_peer(peer[0])
-			ip, port = peerinfo[2:4]
+			peerinfo = utils.decrypt_peer(peer[0])[1]
+			ip, port = peerinfo[1:3]
 			
 			soc = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 			
@@ -107,21 +107,35 @@ class Client:
 				soc.connect((ip,port))
 				soc.send(utils.ping())
 				if soc.recv(2048):
-					return True
 					soc.close()
 				else:
-					return False
 					raise PingError
 					utils.remove_peer(peer[0])
 					soc.close()
 			except socket.error:
-				return False
-				raise PingError
 				utils.remove_peer(peer[0])
 			except PingError:
-				pass
+				utils.remove_peer(peer[0])
 
-	
+	def getback(self):
+		soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		for peer in self.peers:
+			peerinfo = utils.decrypt_peer(peer[0])[1]
+			ip, port = peerinfo[1:3]
+			try:
+				soc.connect((ip, port))
+				soc.send(utils.getback())
+				if client.peerid in soc.recv(2048):
+					soc.close()
+				else:
+					raise GetBackError
+					utils.remove_peer(peer[0])
+					soc.close()
+			except socket.error:
+				utils.remove_peer(peer[0])
+			except GetBackError:
+				utils.remove_peer(peer[0])
+
 
 class Server:
 	def __init__(self):
@@ -200,4 +214,14 @@ class Server:
 		if recvd == utils.ping():
 			conn.send(utils.ping())
 		else:
+			pass
+
+	def getback(self,conn):
+		recvd = conn.recv(2048)
+		msg = utils.unpack_getback(recvd)
+		if msg[1].decode() == 'getback':
+			utils.getback_peer(msg[0])
+			utils.send(f'{msg[0].decode()} Online'.encode())
+		else:
+			conn.close()
 			pass

@@ -152,6 +152,17 @@ class Utils:
     msg = 'ping'
     return msg.encode()
 
+  def getback(self):
+    msg = 'getback'
+    payload = struct.pack('<32s7s', self.peerid.encode(), msg.encode())
+
+    return payload
+
+  def unpack_greet(self, payload):
+    unpack_payload = struct.unpack('<32s7s', self.peerid.encode(), msg.encode())
+
+    return unpack_payload
+
   #Setting up secure connection & Exchanging RSA & AES keys
   def init(self): 
     payload = struct.pack('<32s600s', self.peerid.encode(), b64encode(self.pubkey_pem))
@@ -346,3 +357,5 @@ class Utils:
         raise IdError
         pass
 
+#TODO: Internet Connectivity Check
+#TODO: Read & Write Lpeer (Json)
