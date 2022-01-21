@@ -2,6 +2,8 @@ import sys
 sys.path.insert(1, 'qpeer')
 from node import *
 from errors import *
+from utils import *
+utils = Utils()
 from multiprocessing import Process
 import socket
 import _thread
@@ -27,7 +29,6 @@ def run_client():
 		
 		if len(client.temp_peers) > 0:
 			peer = random.choice(client.temp_peers)
-			print(peer)
 			try:
 				client.setup(peer[1], peer[2])
 				client.temp_peers.remove(peer)
@@ -42,8 +43,10 @@ def run_client():
 			try:
 				client.setup(peerinfo[1], peerinfo[2])
 			except socket.error:
+				utils.remove_peer(peer[0])
+			except Exception as e:
 				print(e)
-
+				
 	else: #Bootstrap
 		ip = '' #Set the supernode ip
 		port = 1691
