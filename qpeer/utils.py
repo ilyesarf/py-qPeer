@@ -336,7 +336,7 @@ class Utils:
     un_payload = b64decode(payload)
     peers = json.loads(self.AES_decrypt(un_payload, iv, key).decode())
     for peer in peers:
-      if peer[0] == self.peerid: #Check if the peer is me 
+      if peer[0] == self.peerid and peer[1] == self.peerip: #Check if the peer is me 
         if self.check_peer(peer[0]) == False and self.check_peer(peer[0],self.temp_peers) == False and self.check_peer(peer[0], self.offline_peers) == False: #Check if peer already exists
           self.temp_peers.append(peer)
         else:
