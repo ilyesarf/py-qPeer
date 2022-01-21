@@ -12,6 +12,7 @@ import os
 import time
 import random
 import hashlib
+import socket
 import pickle
 import struct
 import json
@@ -171,10 +172,16 @@ class Utils:
     
     return iv,key
 
+  def pack_ip(self):
+    return socket.inet_aton(self.peerip)
+
+  def unpack_ip(self, payload):
+    return socket.inet_ntoa(payload)
+
   #Exchaning peerinfo
 
   def peerinfo(self):
-    payload = struct.pack('<i16sh600s',self.role,self.peerip.encode(),self.port,b64encode(self.pubkey_pem))
+    payload = struct.pack('<i4sh600s',self.role,self.pack_ip(),self.port,b64encode(self.pubkey_pem))
     
     return payload
 
@@ -184,14 +191,10 @@ class Utils:
     return b64encode(enc_payload)
 
   def unpack_peerinfo(self, payload): 
-    un_peerinfo = [info for info in struct.unpack('<i16sh600s', payload)]
+    un_peerinfo = [info for info in struct.unpack('<i4sh600s', payload)]
+    un_peerinfo[1] = self.unpack_ip(un_peerinfo[1])
     
     return un_peerinfo
-
-  def dkenc_peerinfo(self, payload, AES_iv, AES_key):
-    dec_payload = self.AES_decrypt(b64decode(payload), AES_iv, AES_key)
-    
-    return self.handle_peerinfo(dec_payload)
 
   def handle_peerinfo(self, payload):
     peerinfo = []
@@ -203,6 +206,11 @@ class Utils:
         peerinfo.append(info)
 
     return peerinfo
+
+  def dkenc_peerinfo(self, payload, AES_iv, AES_key):
+    dec_payload = self.AES_decrypt(b64decode(payload), AES_iv, AES_key)
+    
+    return self.handle_peerinfo(dec_payload)
 
   #Saving all peer info
   def save_lpeer(self,peerid,peerinfo,iv,key): 
@@ -249,7 +257,6 @@ class Utils:
   def decrypt_peerinfo(self, key, peer): #Decrypting peerinfo (dkenc)
     enc_peerinfo = peer[1] 
     peerinfo = self.AES_decrypt(b64decode(enc_peerinfo),int(peer[2]),key)
-
     return json.loads(peerinfo)
 
   def decrypt_peer(self, peerid, peerlist=None): #Returning all peer info
@@ -338,3 +345,4 @@ class Utils:
       else:
         raise IdError
         pass
+

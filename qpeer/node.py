@@ -177,7 +177,7 @@ class Server:
 			utils.save_lpeer(peerid, peerinfo, AES_iv, AES_key.encode())
 		except LpeerError:
 			print("[!] Peer already exists")
-			connc.lose()
+			conn.close()
 
 		def send_peers():
 			conn.send(utils.share_peers(int(AES_iv), AES_key.encode()))
