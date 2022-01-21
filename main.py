@@ -27,6 +27,7 @@ def run_client():
 		
 		if len(client.temp_peers) > 0:
 			peer = random.choice(client.temp_peers)
+			print(peer)
 			try:
 				client.setup(peer[1], peer[2])
 				client.temp_peers.remove(peer)
@@ -36,7 +37,7 @@ def run_client():
 			except Exception as e:
 				print(e)
 		else:
-			peer = utils.decrypt_peer(random.choice(client.peers))
+			peer = utils.decrypt_peer(random.choice(client.peers)[0])
 			peerinfo = peer[1]
 			try:
 				client.setup(peerinfo[1], peerinfo[2])

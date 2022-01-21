@@ -66,7 +66,7 @@ class Utils:
   def getmyip(self): 
     ip = requests.get('https://api.ipify.org').content.decode('utf8')
     if ip is not None:
-      return ip
+      return ip.strip()
     else:
       raise IpError
 
