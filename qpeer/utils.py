@@ -16,6 +16,7 @@ import socket
 import pickle
 import struct
 import json
+import sys
 from binascii import hexlify, unhexlify
 import pyaes, secrets
 import random
@@ -47,7 +48,7 @@ class Utils:
     else:
       self.peerid = hashlib.md5(self.pubkey_pem).hexdigest()
       self.peerip = self.getmyip()
-      self.role = 0
+      self.role = 0 #Change (1) for hard-coded nodes
       self.port = 1691
       self.lpeer = [self.peerid, self.role, self.peerip, self.port]
       self.write_peers(self.lpeer, open('lpeer.pkl','wb')) #Saving local peer for future use
@@ -65,11 +66,13 @@ class Utils:
     self.offline_peers = list()
 
   def getmyip(self): 
-    ip = requests.get('https://api.ipify.org').content.decode('utf8')
-    if ip is not None:
+    try:
+      ip = requests.get('https://api.ipify.org').content.decode('utf8')
       return ip.strip()
-    else:
-      raise IpError
+    except requests.exceptions.ConnectionError:
+      print("No internet connection!")
+      sys.exit()
+    
 
   def RSA_keygen(self): #Generating RSA key pairs
     random_gen = Random.new().read
@@ -151,17 +154,6 @@ class Utils:
   def ping(self):
     msg = 'ping'
     return msg.encode()
-
-  def getback(self):
-    msg = 'getback'
-    payload = struct.pack('<32s7s', self.peerid.encode(), msg.encode())
-
-    return payload
-
-  def unpack_greet(self, payload):
-    unpack_payload = struct.unpack('<32s7s', self.peerid.encode(), msg.encode())
-
-    return unpack_payload
 
   #Setting up secure connection & Exchanging RSA & AES keys
   def init(self): 
@@ -356,6 +348,3 @@ class Utils:
       else:
         raise IdError
         pass
-
-#TODO: Internet Connectivity Check
-#TODO: Read & Write Lpeer (Json)

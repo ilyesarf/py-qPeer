@@ -43,6 +43,3 @@ class IpError(Exception):
 
 class IdError(Exception):
   pass
-
-class GetBackError(Exception):
-  pass

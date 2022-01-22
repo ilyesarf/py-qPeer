@@ -105,35 +105,8 @@ class Client:
 			
 			try:
 				soc.connect((ip,port))
-				soc.send(utils.ping())
-				if soc.recv(2048):
-					soc.close()
-				else:
-					raise PingError
-					utils.remove_peer(peer[0])
-					soc.close()
+				soc.close()
 			except socket.error:
-				utils.remove_peer(peer[0])
-			except PingError:
-				utils.remove_peer(peer[0])
-
-	def getback(self):
-		soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		for peer in self.peers:
-			peerinfo = utils.decrypt_peer(peer[0])[1]
-			ip, port = peerinfo[1:3]
-			try:
-				soc.connect((ip, port))
-				soc.send(utils.getback())
-				if client.peerid in soc.recv(2048):
-					soc.close()
-				else:
-					raise GetBackError
-					utils.remove_peer(peer[0])
-					soc.close()
-			except socket.error:
-				utils.remove_peer(peer[0])
-			except GetBackError:
 				utils.remove_peer(peer[0])
 
 
@@ -209,19 +182,3 @@ class Server:
 		
 		send_peers()
 		print("Done")
-	def ping(self, conn):
-		recvd = conn.recv(2048)
-		if recvd == utils.ping():
-			conn.send(utils.ping())
-		else:
-			pass
-
-	def getback(self,conn):
-		recvd = conn.recv(2048)
-		msg = utils.unpack_getback(recvd)
-		if msg[1].decode() == 'getback':
-			utils.getback_peer(msg[0])
-			utils.send(f'{msg[0].decode()} Online'.encode())
-		else:
-			conn.close()
-			pass
