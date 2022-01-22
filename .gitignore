@@ -1,4 +1,4 @@
-test/
+tmp/
 __pycache__/
 *.pem
 *.pkl
