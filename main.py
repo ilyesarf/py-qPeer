@@ -31,7 +31,6 @@ client = Client()
 
 def run_client():
 	if len(client.peers) > 0:
-		print("Peers !")
 		if len(client.temp_peers) > 0:
 			peer = random.choice(client.temp_peers)
 			try:
@@ -40,12 +39,10 @@ def run_client():
 			except socket.error:
 				client.temp_peers.remove(peer)
 				client.offline_peers.append(peer)
-				print("***********Socket ERROR**********")
 			except Exception as e:
 				print(e)
 		else:
 			peer = utils.decrypt_peer(random.choice(client.peers))
-			print(peer)
 			peerinfo = peer[1]
 			try:
 				client.setup(peerinfo[1], peerinfo[2])
@@ -55,7 +52,6 @@ def run_client():
 				print(e)
 				
 	else: #Bootstrap
-		print("No Peers !")
 		ip = '' #Set the supernode ip (hard-coded node)
 		port = 1691
 		try:
@@ -80,8 +76,8 @@ def internet_check():
 		sys.exit()
 
 def main():
-	"""p1 = Process(target=run_server)
-				p1.start()"""
+	p1 = Process(target=run_server)
+	p1.start()
 
 	p2 = Process(target=run_client)
 	p2.start()
