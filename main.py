@@ -14,8 +14,8 @@ import random
 server = Server()
 
 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-"""soc.bind(('', 1691))
-soc.listen(10)"""
+soc.bind(('', 1691))
+soc.listen(10)
 
 def run_server():
 	while True:
