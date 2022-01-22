@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 sys.path.insert(1, 'qpeer')
 from node import *
@@ -12,15 +14,17 @@ import random
 server = Server()
 
 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-soc.bind(('', 1691))
-soc.listen(10)
+"""soc.bind(('', 1691))
+soc.listen(10)"""
 
 def run_server():
-	conn, addr = soc.accept()
-	try:
-		_thread.start_new_thread(server.setup, (conn, ))
-	except Exception as e:
-		print(e)
+	while True:
+		conn, addr = soc.accept()
+		try:
+			_thread.start_new_thread(server.setup, (conn, ))
+		except Exception as e:
+			print(e)
+			pass
 
 
 client = Client()
@@ -76,8 +80,8 @@ def internet_check():
 		sys.exit()
 
 def main():
-	p1 = Process(target=run_server)
-	p1.start()
+	"""p1 = Process(target=run_server)
+				p1.start()"""
 
 	p2 = Process(target=run_client)
 	p2.start()

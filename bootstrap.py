@@ -1,8 +1,11 @@
+#!/usr/bin/env python3
+
+# [!] RUN this only on your supernode
+
 import sys
 sys.path.insert(1, 'qpeer')
 from node import *
 import socket
-import time
 import _thread
 
 server = Server()
