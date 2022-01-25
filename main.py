@@ -85,6 +85,14 @@ def main():
 	p3 = Process(target=ping_client)
 	p3.start()
 
+def internet_check():
+	while True:
+		try:
+			time.sleep(2)
+			req = requests.get('https://google.com', timeout=3)
+			return True
+		except:
+			return False
 
 if __name__ == '__main__':
 	while internet_check() == True:
