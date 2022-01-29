@@ -23,7 +23,6 @@ def run_server():
 		try:
 			_thread.start_new_thread(server.setup, (conn, ))
 		except Exception as e:
-			print(e)
 			pass
 
 
@@ -41,6 +40,7 @@ def run_client():
 				client.offline_peers.append(peer)
 			except Exception as e:
 				print(e)
+				pass
 		else:
 			peer = utils.decrypt_peer(random.choice(client.peers))
 			peerinfo = peer[1]
@@ -50,6 +50,7 @@ def run_client():
 				utils.remove_peer(peer[0])
 			except Exception as e:
 				print(e)
+				pass
 				
 	else: #Bootstrap
 		ip = '' #Set the supernode ip (hard-coded node)

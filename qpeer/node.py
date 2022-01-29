@@ -59,6 +59,7 @@ class Client:
 		except LpeerError:
 			print('[!] Peer already exists')
 			soc.close()
+			pass
 
 		def send_peerinfo():
 			payload = utils.kenc_peerinfo(int(AES_iv), AES_key)
@@ -95,6 +96,7 @@ class Client:
 				send_peers()
 				soc.close()
 		send_bye()
+		print("Done")
 
 	def ping(self, peerid,peerlist=None):
 			peer = utils.find_peer(peerid, peerlist)
@@ -115,10 +117,7 @@ class Server:
 		self.peers = utils.peers
 		self.temp_peers = utils.temp_peers
 		self.offline_peers = utils.offline_peers
-		# self.connected_peers = [] Important?
 
-	#TODO: Rewrite this while focusing on handling multiple peers at one time.
-	#Harder than i thought
 	def setup(self, conn):
 
 		def greet():
@@ -160,12 +159,6 @@ class Server:
 			raise IdError
 			conn.close()
 		
-		try:
-			utils.save_lpeer(peerid, peerinfo, AES_iv, AES_key.encode())
-		except LpeerError:
-			print("[!] Peer already exists")
-			conn.close()
-
 		def send_peers():
 			conn.send(utils.share_peers(int(AES_iv), AES_key.encode()))
 			recvd = conn.recv(8192)
@@ -179,6 +172,12 @@ class Server:
 			else:
 				conn.send(utils.bye())
 				conn.close()
-		
-		send_peers()
+
+		try:
+			utils.save_lpeer(peerid, peerinfo, AES_iv, AES_key.encode())
+			send_peers()
+		except LpeerError:
+			print("[!] Peer already exists")
+			conn.close()
+					
 		print("Done")
