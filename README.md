@@ -64,11 +64,13 @@ It is the first open-source project from a series of decentralized projects unde
 * [pyaes Library](https://pypi.org/project/pyaes/)
 
 ## Usage
-1. Launch main.py
-2. Launch docker-compose...
+1. Run "pip install -r requirements.txt"
+2. Launch bootstrap.py (on your bootstrap node)
+3. Launch main.py (on your node)
  
-## Limitations
-Windows Server and Insider versions are NOT officially supported. Run at your own risk.
+## TODO
+* Accept incoming/outcoming requests behind NAT (Ideas: UPnP, Hole Punching, RTC, Quic)
+* Add Logging for debugging
 
 ## FAQ
 <b>Q: qPeer is stuck/hangs/crashes.</b>
@@ -87,12 +89,18 @@ A: AVs seem to like it more for some reason. I suspect this occurs because of th
 
 A: qPeer won't change any of your settings.
 
+<b>Q: qPeer doesn't accept Internet connections</b>
+A: Up to now, qPeer does not support Internet connections behind NAT. But, you can enable qPeer's port manually from your router.  
+
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/Quimzy/qPeer/issues) for a list of proposed features (and known issues).
-
-
+<b>qpeer/utils.py</b>: Contains all functions that are required by other scripts to work?
+<b>qpeer/errors.py</b>: Contains all exceptions
+<b>qpeer/node.py</b>: Peer Discovery Protocol & Ping
+<b>main.py</b>: Runs server/client on node
+<b>bootstrap.py</b>: Runs server on supernode
+<b>requirements.txt</b>: Contains all required libraries
 
 <!-- CONTRIBUTING -->
 ## Contributing
