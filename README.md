@@ -8,8 +8,11 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
+<<<<<<< HEAD
   <a href="https://github.com/Quimzy/qPeer">
   </a>
+=======
+>>>>>>> 9d95de5e2de5ebe13399f7a83607e71b5cfff543
 
   <h3 align="center">qPeer Protocol</h3>
 
@@ -51,8 +54,11 @@
 ## About The Project
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ![qPeer Screenshot](https://raw.githubusercontent.com/Quimzy/qPeer/main/Pictures/Screenshot.png)
 
+=======
+>>>>>>> 9d95de5e2de5ebe13399f7a83607e71b5cfff543
 <b>qPeer</b> is a peer-to-peer routing protocol intended for running your decentralized networks.
 It is the first open-source project in a series of decentralized projects under the name Quanta.
 =======
