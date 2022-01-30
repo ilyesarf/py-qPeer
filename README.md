@@ -83,7 +83,7 @@ A: qPeer won't change any of your settings.
 A: So far, qPeer does not support Internet connections behind NAT. Although, you can enable qPeer's port manually from your router's settings.  
 
 <!-- ROADMAP -->
-## Roadmap
+## TODO (Upcoming Features)
 * Implement accepting incoming/outcoming requests behind NAT (UPnP, Hole Punching, RTC, Quic...)
 * Improve logging for debugging purposes
 
