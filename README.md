@@ -57,8 +57,6 @@ It is the first open-source project from a series of decentralized projects unde
 ### Built With
 
 * [Python](https://www.python.org)
-* [python-secrets Library](https://docs.python.org/3/library/secrets.html)
-* [pyaes Library](https://pypi.org/project/pyaes/)
 
 ## Usage
 1. Run "pip install -r requirements.txt"
