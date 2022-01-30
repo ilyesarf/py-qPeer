@@ -8,13 +8,11 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/Quimzy/qPeer">
-  </a>
 
   <h3 align="center">qPeer Protocol</h3>
 
   <p align="center">
-    Peer-to-peer routing protocol for decentralization
+    Peer-to-peer routing protocol for decentralized networks
     <br />
     <a href="https://github.com/Quimzy/qPeer"><strong>Explore the repository »</strong></a>
     <br />
@@ -38,9 +36,9 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#limitations">Limitations</a></li>
     <li><a href="#faq">FAQ</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
+      <li><a href="#scripts">Scripts</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -50,8 +48,8 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-<b>qPeer</b> is a peer-to-peer routing protocol (coded in python) to run your decentralized network.
-It is the first open-source project from a series of decentralized projects under the name of Quanta.
+<b>qPeer</b> is a peer-to-peer routing protocol intended for running your decentralized networks.
+It is the first open-source project in a series of decentralized projects under the name Quanta.
 
 
 ### Built With
@@ -59,13 +57,9 @@ It is the first open-source project from a series of decentralized projects unde
 * [Python](https://www.python.org)
 
 ## Usage
-1. Run "pip install -r requirements.txt"
-2. Launch bootstrap.py (on your bootstrap node)
-3. Launch main.py (on your node)
- 
-## TODO
-* Accept incoming/outcoming requests behind NAT (Ideas: UPnP, Hole Punching, RTC, Quic)
-* Add Logging for debugging
+1. Install requirements (`pip install -r requirements.txt`)
+2. Launch bootstrap.py on your bootstrap node
+3. Launch main.py on your nodes
 
 ## FAQ
 <b>Q: qPeer is stuck/hangs/crashes.</b>
@@ -86,22 +80,26 @@ A: qPeer won't change any of your settings.
 
 <b>Q: qPeer doesn't accept Internet connections</b>
 
-A: Up to now, qPeer does not support Internet connections behind NAT. But, you can enable qPeer's port manually from your router.  
+A: So far, qPeer does not support Internet connections behind NAT. Although, you can enable qPeer's port manually from your router's settings.  
 
 <!-- ROADMAP -->
 ## Roadmap
+* Implement accepting incoming/outcoming requests behind NAT (UPnP, Hole Punching, RTC, Quic...)
+* Improve logging for debugging purposes
 
-<b>qpeer/utils.py</b>: Contains all functions that are required by other scripts to work?
+## Scripts
 
-<b>qpeer/errors.py</b>: Contains all exceptions
+* <b>qpeer/utils.py</b>: Contains utilities required by other scripts
 
-<b>qpeer/node.py</b>: Peer Discovery Protocol & Ping
+* <b>qpeer/errors.py</b>: Handles all exceptions
 
-<b>main.py</b>: Runs server/client on node
+* <b>qpeer/node.py</b>: Peer discovery protocol
 
-<b>bootstrap.py</b>: Runs server on supernode
+* <b>main.py</b>: Runs the server/client on a node
 
-<b>requirements.txt</b>: Contains all required libraries
+* <b>bootstrap.py</b>: Runs the server on a supernode
+
+* <b>requirements.txt</b>: Contains all required libraries
 
 <!-- CONTRIBUTING -->
 ## Contributing
