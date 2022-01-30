@@ -97,10 +97,15 @@ A: Up to now, qPeer does not support Internet connections behind NAT. But, you c
 ## Roadmap
 
 <b>qpeer/utils.py</b>: Contains all functions that are required by other scripts to work?
+
 <b>qpeer/errors.py</b>: Contains all exceptions
+
 <b>qpeer/node.py</b>: Peer Discovery Protocol & Ping
+
 <b>main.py</b>: Runs server/client on node
+
 <b>bootstrap.py</b>: Runs server on supernode
+
 <b>requirements.txt</b>: Contains all required libraries
 
 <!-- CONTRIBUTING -->
