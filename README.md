@@ -90,6 +90,7 @@ A: AVs seem to like it more for some reason. I suspect this occurs because of th
 A: qPeer won't change any of your settings.
 
 <b>Q: qPeer doesn't accept Internet connections</b>
+
 A: Up to now, qPeer does not support Internet connections behind NAT. But, you can enable qPeer's port manually from your router.  
 
 <!-- ROADMAP -->
