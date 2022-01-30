@@ -96,7 +96,6 @@ class Client:
 				send_peers()
 				soc.close()
 		send_bye()
-		print("Done")
 
 	def ping(self, peerid,peerlist=None):
 			peer = utils.find_peer(peerid, peerlist)
@@ -163,12 +162,8 @@ class Server:
 			conn.send(utils.share_peers(int(AES_iv), AES_key.encode()))
 			recvd = conn.recv(8192)
 			if recvd != utils.bye() and len(recvd) > 0:
-				try:
-					utils.save_peers(recvd, int(AES_iv), AES_key.encode())
-					conn.close()
-				except Exception as e:
-					print(e)
-					conn.close()
+				utils.save_peers(recvd, int(AES_iv), AES_key.encode())
+				conn.close()
 			else:
 				conn.send(utils.bye())
 				conn.close()
@@ -179,5 +174,10 @@ class Server:
 		except LpeerError:
 			print("[!] Peer already exists")
 			conn.close()
-					
-		print("Done")
+		except PeersError:
+			print("[!] Temp Peer already exists")
+			conn.close()
+		except Exception as e:
+			print(e)
+			conn.close()
+			
