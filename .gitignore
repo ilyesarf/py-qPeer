@@ -1,6 +1,7 @@
 tmp/
 __pycache__/
+docker/
 *.pem
 *.pkl
 *.sh
-Dockerfile*
+
