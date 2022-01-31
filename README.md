@@ -9,6 +9,9 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
+  <a href="https://github.com/Quimzy/qPeer">
+    <img src="https://github.com/Quimzy/qPeer/blob/master/Logo.png" alt="Logo" width="80" height="80">
+  </a>
 
   <h3 align="center">qPeer Protocol</h3>
 
