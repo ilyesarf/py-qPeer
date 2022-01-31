@@ -86,11 +86,11 @@ A: So far, qPeer does not support Internet connections behind NAT. Although, you
 
 <!-- ROADMAP -->
 ## TODO (Upcoming Features)
-* Accepting incoming/outcoming requests behind NAT (UPnP, Hole Punching, RTC, Quic...) <b>*Urgent*</b>
-* Improving logging for debugging purposes <b>*Urgent*</b>
-* Implementing AI for smarter peer discovery *Normal*
-* Enabling qPeer to work without internet connection *Advanced*
-* Enabling peer discovery with any bootstrap peers *Advanced*
+* Accepting incoming/outcoming requests behind NAT: UPnP, Hole Punching, RTC, Quic... (<b>*Urgent*</b>)
+* Improving logging for debugging purposes (<b>*Urgent*</b>)
+* Implementing AI for smarter peer discovery (*Normal*)
+* Enabling qPeer to work without internet connection (*Advanced*)
+* Enabling peer discovery without any bootstrap peers (*Advanced*)
 
 ## Scripts
 
