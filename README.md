@@ -33,14 +33,13 @@
     <li>
       <a href="#about-the-project">About The Project</a>
       <ul>
-        <li><a href="#built-with">Built With</a></li>
+        <li><a href="#support">Support</a></li>
       </ul>
     </li>
-    <li><
     <li><a href="#usage">Usage</a></li>
     <li><a href="#faq">FAQ</a></li>
-    <li><a href="#TODO">TODO</a></li>
-      <li><a href="#scripts">Scripts</a></li>
+    <li><a href="#todo">TODO</a></li>
+    <li><a href="#scripts">Scripts</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -55,9 +54,11 @@ It is the first open-source project in a series of decentralized projects under 
 
 *<b>Disclaimer</b>: The project is still in experimental stage.*
 
-### Built With
+### Support
 
-* [Python](https://www.python.org)
+* Donate to my Ethereum Wallet: 0xCaf0726d4eFE5291e23f9351553Cfd2DB1Af7A48
+* Donate to my Bitcoin Wallet: bc1qx4ef9ujyr7aga22a4zr5x8z75yf09xe49380jl
+
 
 ## Usage
 1. Install requirements (`pip install -r requirements.txt`)
