@@ -56,7 +56,7 @@ It is the first open-source project in a series of decentralized projects under 
 
 ### Support
 
-* <a href="bitcoin:BC1QSRGAWHX3G639Y9PEP7YQA84S26ZRTRWWFCX9GD"> Donate to my Bitcoin Wallet </a>
+* Donate to my Bitcoin Wallet: bc1qsrgawhx3g639y9pep7yqa84s26zrtrwwfcx9gd
 * Donate to my Ethereum Wallet: 0xCaf0726d4eFE5291e23f9351553Cfd2DB1Af7A48
 
 
