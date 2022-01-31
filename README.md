@@ -60,6 +60,7 @@ It is the first open-source project in a series of decentralized projects under 
 ## Usage
 1. Install requirements (`pip install -r requirements.txt`)
 2. Launch bootstrap.py on your bootstrap node
+3. Set bootstrap peerip in main.py (line 56)
 3. Launch main.py on your nodes
 
 ## FAQ
