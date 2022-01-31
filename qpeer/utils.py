@@ -46,7 +46,7 @@ class Utils:
 
       self.port = self.lpeer[3]
     else:
-      self.peerid = hashlib.md5(self.pubkey_pem).hexdigest()
+      self.peerid = hashlib.sha1(self.pubkey_pem).hexdigest()
       self.peerip = self.getmyip()
       self.role = 0 #Change (1) for hard-coded nodes
       self.port = 1691
@@ -138,12 +138,12 @@ class Utils:
 
   def greet(self):
     msg = 'greet'
-    payload = struct.pack('<32s5s', self.peerid.encode(), msg.encode())
+    payload = struct.pack('<40s5s', self.peerid.encode(), msg.encode())
 
     return payload
 
   def unpack_greet(self, payload):
-    unpack_payload = struct.unpack('<32s5s', payload)
+    unpack_payload = struct.unpack('<40s5s', payload)
 
     return unpack_payload
 
@@ -157,11 +157,11 @@ class Utils:
 
   #Setting up secure connection & Exchanging RSA & AES keys
   def init(self): 
-    payload = struct.pack('<32s600s', self.peerid.encode(), b64encode(self.pubkey_pem))
+    payload = struct.pack('<40s600s', self.peerid.encode(), b64encode(self.pubkey_pem))
     return payload
 
   def unpack_init(self, payload):
-    info = struct.unpack('<32s600s', payload)
+    info = struct.unpack('<40s600s', payload)
     return info
 
   def penc_AES(self, key, iv, pubkey_pem):
