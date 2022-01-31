@@ -4,9 +4,7 @@
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
-[![support](
-https://brianmacdonald.github.io/Ethonate/svg/eth-support-blue.svg)](
-https://brianmacdonald.github.io/Ethonate/address#0xCaf0726d4eFE5291e23f9351553Cfd2DB1Af7A48)
+
 
 <!-- PROJECT LOGO -->
 <br />
