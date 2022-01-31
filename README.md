@@ -51,6 +51,7 @@
 <b>qPeer</b> is a peer-to-peer routing protocol intended for running your decentralized networks.
 It is the first open-source project in a series of decentralized projects under the name Quanta.
 
+*<b>Disclaimer</b>: The project is still in experimental stage.*
 
 ### Built With
 
