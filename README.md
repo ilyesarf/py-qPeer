@@ -89,6 +89,7 @@ A: So far, qPeer does not support Internet connections behind NAT. Although, you
 
 <!-- ROADMAP -->
 ## TODO
+* Identifying message types and handling them based on type: JSON (<b>*Urgent*</b>)
 * Accepting incoming/outcoming requests behind NAT: UPnP, Hole Punching, RTC, Quic... (<b>*Urgent*</b>)
 * Improving logging for debugging purposes (<b>*Urgent*</b>)
 * Implementing AI for smarter peer discovery (*Normal*)
@@ -96,7 +97,6 @@ A: So far, qPeer does not support Internet connections behind NAT. Although, you
 * Enabling peer discovery without any bootstrap peers (*Advanced*)
 
 ## Scripts
-
 * <b>qpeer/utils.py</b>: Contains utilities required by other scripts
 
 * <b>qpeer/errors.py</b>: Handles all exceptions
