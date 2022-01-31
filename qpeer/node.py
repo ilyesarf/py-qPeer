@@ -98,17 +98,30 @@ class Client:
 		send_bye()
 
 	def ping(self, peerid,peerlist=None):
-			peer = utils.find_peer(peerid, peerlist)
-			peerinfo = utils.decrypt_peer(peer[0])[1]
-			ip, port = peerinfo[1:3]
-			
-			soc = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-			
-			try:
-				soc.connect((ip,port))
-				soc.close()
-			except socket.error:
-				utils.remove_peer(peer[0])
+		peer = utils.find_peer(peerid, peerlist)
+		peerinfo = utils.decrypt_peer(peer[0])[1]
+		ip, port = peerinfo[1:3]
+		
+		soc = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+		
+		try:
+			soc.connect((ip,port))
+			soc.close()
+		except socket.error:
+			utils.remove_peer(peer[0])
+
+	def getback(self, peerid):
+		peer = utils.find_peer(peerid, self.offline_peers)
+		ip, port = peer[1:]
+
+		soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+		try:
+			soc.connect((ip, port))
+			soc.close()
+			utils.getback_peer(peerid)
+		except socket.error:
+			pass
 
 
 class Server:

@@ -29,43 +29,53 @@ def run_server():
 client = Client()
 
 def run_client():
-	if len(client.peers) > 0:
-		if len(client.temp_peers) > 0:
-			peer = random.choice(client.temp_peers)
+	while True:
+		if len(client.peers) > 0:
+			if len(client.temp_peers) > 0:
+				peer = random.choice(client.temp_peers)
+				try:
+					client.setup(peer[1], peer[2])
+					client.temp_peers.remove(peer)
+				except socket.error:
+					client.temp_peers.remove(peer)
+					client.offline_peers.append(peer)
+				except Exception as e:
+					print(e)
+					pass
+			else:
+				peer = utils.decrypt_peer(random.choice(client.peers))
+				peerinfo = peer[1]
+				try:
+					client.setup(peerinfo[1], peerinfo[2])
+				except socket.error:
+					utils.remove_peer(peer[0])
+				except Exception as e:
+					print(e)
+					pass
+					
+		else: #Bootstrap
+			ip = '' #Set the supernode ip (hard-coded node)
+			port = 1691
 			try:
-				client.setup(peer[1], peer[2])
-				client.temp_peers.remove(peer)
-			except socket.error:
-				client.temp_peers.remove(peer)
-				client.offline_peers.append(peer)
+				client.setup(ip, port)
 			except Exception as e:
 				print(e)
-				pass
-		else:
-			peer = utils.decrypt_peer(random.choice(client.peers))
-			peerinfo = peer[1]
-			try:
-				client.setup(peerinfo[1], peerinfo[2])
-			except socket.error:
-				utils.remove_peer(peer[0])
-			except Exception as e:
-				print(e)
-				pass
-				
-	else: #Bootstrap
-		ip = '' #Set the supernode ip (hard-coded node)
-		port = 1691
-		try:
-			client.setup(ip, port)
-		except Exception as e:
-			print(e)
 
 def ping_client():
-	if len(client.peers) > 5:
-		peer = random.choice(client.peers)		
-		client.ping(peer[0])
-	else:
-		pass
+	while True:
+		if len(client.peers) > 1:
+			peer = random.choice(client.peers)		
+			client.ping(peer[0])
+		else:
+			pass
+
+def getback_client():
+	while True:
+		if len(client.offline_peers) > 0:
+			peer = random.choice(client.offline_peers)
+			client.getback_client(peer[0])
+		else:
+			pass
 
 def internet_check():
 	try:
@@ -85,6 +95,9 @@ def main():
 
 	p3 = Process(target=ping_client)
 	p3.start()
+
+	p4 = Process(target=ping_client)
+	p4.start()
 
 def internet_check():
 	while True:
