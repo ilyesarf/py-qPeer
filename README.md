@@ -40,7 +40,7 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#features">Features</a></li>
+    <li><a href="#benchmarks">Benchmarks</a></li>
     <li><a href="#faq">FAQ</a></li>
     <li><a href="#todo">TODO</a></li>
     <li><a href="#scripts">Scripts</a></li>
@@ -71,7 +71,7 @@ It is the first open-source project in a series of decentralized projects under 
 4. Set bootstrap peerip in main.py (line 56)
 5. Launch main.py on your nodes
 
-## Features
+## Benchmarks
 * Peers don't generate their peerid randomly. The peerid is based on the peer's public key.
 * qPeer uses hard-coded peers just for the first connection. For future connections, it uses the other peers it found.
 * qPeer stores peers information securely using cryptographic techniques
