@@ -71,7 +71,7 @@ It is the first open-source project in a series of decentralized projects under 
 5. Launch main.py on your nodes
 
 ## Features
-* Peers don't generate their peerid randomly
+* Peers don't generate their peerid randomly. The peerid is based on the peer's public key.
 * qPeer uses hard-coded peers just for the first connection. For future connections, it uses the other peers it found.
 * qPeer stores peers information securely using cryptographic techniques
 * qPeer's messages are secured with RSA & AES
