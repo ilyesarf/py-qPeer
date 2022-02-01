@@ -45,12 +45,15 @@ def run_client():
 			else:
 				peer = utils.decrypt_peer(random.choice(client.peers))
 				peerinfo = peer[1]
-				try:
-					client.setup(peerinfo[1], peerinfo[2])
-				except socket.error:
-					utils.remove_peer(peer[0])
-				except Exception as e:
-					print(e)
+				if peerinfo[0] == 0
+					try:
+						client.setup(peerinfo[1], peerinfo[2])
+					except socket.error:
+						utils.remove_peer(peer[0])
+					except Exception as e:
+						print(e)
+						pass
+				else:
 					pass
 					
 		else: #Bootstrap
