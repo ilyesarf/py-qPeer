@@ -101,11 +101,12 @@ class Client:
 		peer = utils.find_peer(peerid, peerlist)
 		peerinfo = utils.decrypt_peer(peer[0])[1]
 		ip, port = peerinfo[1:3]
-		
+		msg = utils.ping()
 		soc = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 		
 		try:
 			soc.connect((ip,port))
+			soc.send(msg)
 			soc.close()
 		except socket.error:
 			utils.remove_peer(peer[0])
@@ -130,11 +131,10 @@ class Server:
 		self.temp_peers = utils.temp_peers
 		self.offline_peers = utils.offline_peers
 
-	def setup(self, conn):
+	def setup(self, conn, firstmsg):
 
 		def greet():
-			msg = conn.recv(1024)
-			unpack_msg = utils.unpack_greet(msg)
+			unpack_msg = utils.unpack_greet(firstmsg)
 			if len(unpack_msg) == 2 and str(unpack_msg[1].decode()) == 'greet':
 				peerid = unpack_msg[0]
 				return str(peerid.decode())

@@ -137,10 +137,11 @@ class Utils:
     return msg
 
   def greet(self):
+    msgtype = 'qpeer'
     msg = 'greet'
     payload = struct.pack('<40s5s', self.peerid.encode(), msg.encode())
 
-    return payload
+    return (msgtype,payload)
 
   def unpack_greet(self, payload):
     unpack_payload = struct.unpack('<40s5s', payload)
