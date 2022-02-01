@@ -65,9 +65,16 @@ It is the first open-source project in a series of decentralized projects under 
 
 ## Usage
 1. Install requirements (`pip install -r requirements.txt`)
-2. Launch bootstrap.py on your bootstrap node
-3. Set bootstrap peerip in main.py (line 56)
-3. Launch main.py on your nodes
+2. Change role to 1, for bootstrap peers in utils.py (line 51) 
+3. Launch bootstrap.py on your bootstrap node
+4. Set bootstrap peerip in main.py (line 56)
+5. Launch main.py on your nodes
+
+## Features
+* Peers don't generate their peerid randomly
+* qPeer uses hard-coded peers just for the first connection. For future connections, it uses the other peers it found.
+* qPeer stores peers information securely using cryptographic techniques
+* qPeer messages are secured with RSA & AES
 
 ## FAQ
 <b>Q: qPeer is stuck/hangs/crashes.</b>
