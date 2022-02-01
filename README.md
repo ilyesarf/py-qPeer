@@ -40,6 +40,7 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#features">Features</a></li>
     <li><a href="#faq">FAQ</a></li>
     <li><a href="#todo">TODO</a></li>
     <li><a href="#scripts">Scripts</a></li>
