@@ -74,7 +74,7 @@ It is the first open-source project in a series of decentralized projects under 
 * Peers don't generate their peerid randomly
 * qPeer uses hard-coded peers just for the first connection. For future connections, it uses the other peers it found.
 * qPeer stores peers information securely using cryptographic techniques
-* qPeer messages are secured with RSA & AES
+* qPeer's messages are secured with RSA & AES
 
 ## FAQ
 <b>Q: qPeer is stuck/hangs/crashes.</b>
