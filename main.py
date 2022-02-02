@@ -21,9 +21,15 @@ def run_server():
 	while True:
 		conn, addr = soc.accept()
 		try:
-			_thread.start_new_thread(server.setup, (conn, ))
+			firstmsg = conn.recv(2048)
+			if firstmsg[0] == 'qpeer': #Check msgtype
+				_thread.start_new_thread(server.setup, (conn, firstmsg[1],))
+			else:
+				pass
 		except Exception as e:
-			pass
+			print(e)
+
+			
 
 
 client = Client()
