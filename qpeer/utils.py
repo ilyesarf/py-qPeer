@@ -20,10 +20,11 @@ import sys
 from binascii import hexlify, unhexlify
 import pyaes, secrets
 import random
-
+import miniupnpc
 
 class Utils:
   def __init__(self):
+    self.upnp = miniupnpc.UPnP()
     #Setting RSA key pairs
     if os.path.isfile('privkey.pem'):
       self.key, self.pubkey_pem = self.RSA_read()
@@ -36,6 +37,7 @@ class Utils:
       self.lpeer = self.read_peers(open('lpeer.pkl','rb'))[0] #Reading lpeer info
       self.peerid = self.lpeer[0]
       self.role = self.lpeer[1]
+      self.port = self.lpeer[3]
 
       if self.lpeer[2] == self.getmyip():
         self.peerip = self.lpeer[2]
@@ -44,12 +46,11 @@ class Utils:
         self.lpeer[2] = self.peerip
         self.write_peers(self.lpeer, open('lpeer.pkl','wb')) #Update file
 
-      self.port = self.lpeer[3]
     else:
       self.peerid = hashlib.sha1(self.pubkey_pem).hexdigest()
+      self.port = 1691
       self.peerip = self.getmyip()
       self.role = 0 #Change (1) for hard-coded nodes
-      self.port = 1691
       self.lpeer = [self.peerid, self.role, self.peerip, self.port]
       self.write_peers(self.lpeer, open('lpeer.pkl','wb')) #Saving local peer for future use
 
@@ -65,14 +66,20 @@ class Utils:
     self.temp_peers = list()
     self.offline_peers = list()
 
-  def getmyip(self): 
-    try:
-      ip = requests.get('https://api.ipify.org').content.decode('utf8')
-      return ip.strip()
-    except requests.exceptions.ConnectionError:
-      print("No internet connection!")
-      sys.exit()
+  def getmyip(self):
+
+    upnp = miniupnpc.UPnP()
+    self.upnp.discoverdelay = 10
     
+    try:
+      self.upnp.discover()  
+      self.upnp.selectigd()
+      ip = self.upnp.externalipaddress()
+
+      return ip
+    
+    except Exception as e:
+      print(e)    
 
   def RSA_keygen(self): #Generating RSA key pairs
     random_gen = Random.new().read
@@ -135,6 +142,28 @@ class Utils:
     msg = cipher.decrypt(enc_msg)
 
     return msg
+  
+  def forward_port(self):
+    self.upnp.discoverdelay = 10
+
+    try:
+      self.upnp.discover()
+      self.upnp.selectigd()
+      localip = self.upnp.lanaddr
+      port = self.port
+      r = self.upnp.getspecificportmapping(port, 'TCP')
+      while r != None and port < 65536:
+        port = port + 1
+        r = self.upnp.getspecificportmapping(port, 'TCP')
+
+      forward = self.upnp.addportmapping(port, 'TCP', localip, self.port, 'qPeer port forwarding %u' % port, '')
+      return forward
+
+    except Exception as e:
+      print(e)
+
+  def close_port(self):
+    self.upnp.deleteportmapping(self.port, 'TCP')
 
   def greet(self):
     msgtype = 'qpeer'
@@ -157,6 +186,7 @@ class Utils:
     return msg.encode()
 
   #Setting up secure connection & Exchanging RSA & AES keys
+  
   def init(self): 
     payload = struct.pack('<40s600s', self.peerid.encode(), b64encode(self.pubkey_pem))
     return payload
@@ -349,3 +379,5 @@ class Utils:
       else:
         raise IdError
         pass
+
+  

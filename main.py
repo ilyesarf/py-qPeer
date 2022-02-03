@@ -13,24 +13,32 @@ import random
 
 server = Server()
 
-soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-soc.bind(('', 1691))
-soc.listen(10)
-
 def run_server():
-	while True:
-		conn, addr = soc.accept()
-		try:
-			firstmsg = conn.recv(2048)
-			if firstmsg[0] == 'qpeer': #Check msgtype
-				_thread.start_new_thread(server.setup, (conn, firstmsg[1],))
-			else:
-				pass
-		except Exception as e:
-			print(e)
+	try:
+		soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		soc.bind(('', 1691))
+		soc.listen(10)
+		forward = utils.forward_port()
+		if forward:
+			while True:
+				conn, addr = soc.accept()
+				try:
+					firstmsg = conn.recv(2048)
+					if firstmsg[0] == 'qpeer': #Check msgtype
+						_thread.start_new_thread(server.setup, (conn, firstmsg[1],))
+					else:
+						pass
+				except Exception as e:
+					print(e)
+		else:
+			print("Can't map qPeer's port")
+			soc.close()
 
-			
-
+	except Exception as e:
+		print(e)
+		
+	finally:
+		utils.close_port()
 
 client = Client()
 
@@ -86,14 +94,6 @@ def getback_client():
 		else:
 			pass
 
-def internet_check():
-	try:
-		soc.connect(('1.1.1.1', 80))
-		return True
-	except socket.error:
-		print("No internet connection!")
-		return False
-		sys.exit()
 
 def main():
 	p1 = Process(target=run_server)
@@ -105,7 +105,7 @@ def main():
 	p3 = Process(target=ping_client)
 	p3.start()
 
-	p4 = Process(target=ping_client)
+	p4 = Process(target=getback_client)
 	p4.start()
 
 def internet_check():
@@ -120,5 +120,6 @@ def internet_check():
 if __name__ == '__main__':
 	while internet_check() == True:
 		main()
-
+	else:
+		print("No internet connection")
 
