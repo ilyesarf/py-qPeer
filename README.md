@@ -96,13 +96,12 @@ A: qPeer won't change any of your settings.
 
 <b>Q: qPeer doesn't accept Internet connections</b>
 
-A: So far, qPeer does not support Internet connections behind NAT. Although, you can enable qPeer's port manually from your router's settings.  
+A: qPeer uses UPnP to work behind NAT. Make sure that your router supports UPnP.
 
 <!-- ROADMAP -->
 ## TODO
-* Identifying message types and handling them based on type: Tuples *(<b>Solved</b>)*
-* Accepting incoming/outcoming requests behind NAT: UPnP, Hole Punching, RTC, Quic... (<b>*Urgent*</b>)
 * Improving logging for debugging purposes (<b>*Urgent*</b>)
+* Using more than one method to bypass NAT (*Normal*)
 * Implementing AI for smarter peer discovery (*Normal*)
 * Enabling qPeer to work without internet connection (*Advanced*)
 * Enabling peer discovery without any bootstrap peers (*Advanced*)
