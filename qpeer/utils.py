@@ -23,7 +23,7 @@ import random
 
 
 class Utils:
-  def __init__(self): #get ip from upnp ? 
+  def __init__(self):
 
     #Setting RSA key pairs
     if os.path.isfile('privkey.pem'):
@@ -66,12 +66,17 @@ class Utils:
     self.temp_peers = list()
     self.offline_peers = list()
 
-  def getmyip(self): #useless?
+  def getmyip(self):
     import miniupnpc
 
     upnp = miniupnpc.UPnP()
-    return upnp.externalipaddress()
+    upnp.discoverdelay = 10
+    devices = upnp.discover()
     
+    upnp.selectigd()
+    
+    ip = upnp.externalipaddress()
+    return ip    
 
   def RSA_keygen(self): #Generating RSA key pairs
     random_gen = Random.new().read
