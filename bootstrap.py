@@ -24,7 +24,7 @@ def run_server():
 			while True:
 				conn, addr = soc.accept()
 				try:
-					firstmsg = conn.recv(2048)
+					firstmsg = json.loads(conn.recv(2048))
 					if firstmsg[0] == 'qpeer': #Check msgtype
 						_thread.start_new_thread(server.setup, (conn, firstmsg[1],))
 					else:
