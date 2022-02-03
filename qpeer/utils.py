@@ -23,7 +23,8 @@ import random
 
 
 class Utils:
-  def __init__(self):
+  def __init__(self): #get ip from upnp ? 
+
     #Setting RSA key pairs
     if os.path.isfile('privkey.pem'):
       self.key, self.pubkey_pem = self.RSA_read()
@@ -65,13 +66,11 @@ class Utils:
     self.temp_peers = list()
     self.offline_peers = list()
 
-  def getmyip(self): 
-    try:
-      ip = requests.get('https://api.ipify.org').content.decode('utf8')
-      return ip.strip()
-    except requests.exceptions.ConnectionError:
-      print("No internet connection!")
-      sys.exit()
+  def getmyip(self): #useless?
+    import miniupnpc
+
+    upnp = miniupnpc.UPnP()
+    return upnp.externalipaddress()
     
 
   def RSA_keygen(self): #Generating RSA key pairs
