@@ -24,7 +24,7 @@ import miniupnpc
 
 class Utils:
   def __init__(self):
-
+    self.upnp = miniupnpc.UPnP()
     #Setting RSA key pairs
     if os.path.isfile('privkey.pem'):
       self.key, self.pubkey_pem = self.RSA_read()
@@ -69,12 +69,12 @@ class Utils:
   def getmyip(self):
 
     upnp = miniupnpc.UPnP()
-    upnp.discoverdelay = 10
+    self.upnp.discoverdelay = 10
     
     try:
-      upnp.discover()  
-      upnp.selectigd()
-      ip = upnp.externalipaddress()
+      self.upnp.discover()  
+      self.upnp.selectigd()
+      ip = self.upnp.externalipaddress()
 
       return ip
     
@@ -142,26 +142,28 @@ class Utils:
     msg = cipher.decrypt(enc_msg)
 
     return msg
-
+  
   def forward_port(self):
-    upnp = miniupnpc.UPnP()
-    upnp.discoverdelay = 10
+    self.upnp.discoverdelay = 10
 
     try:
-      upnp.discover()
-      upnp.selectigd()
-      localip = upnp.lanaddr
+      self.upnp.discover()
+      self.upnp.selectigd()
+      localip = self.upnp.lanaddr
       port = self.port
-      r = upnp.getspecificportmapping(port, 'TCP')
+      r = self.upnp.getspecificportmapping(port, 'TCP')
       while r != None and port < 65536:
         port = port + 1
-        r = upnp.getspecificportmapping(port, 'TCP')
+        r = self.upnp.getspecificportmapping(port, 'TCP')
 
-      forward = upnp.addportmapping(port, 'TCP', localip, self.port, 'qPeer port forwarding %u' % port, '')
+      forward = self.upnp.addportmapping(port, 'TCP', localip, self.port, 'qPeer port forwarding %u' % port, '')
       return forward
-      
+
     except Exception as e:
       print(e)
+
+  def close_port(self):
+    self.upnp.deleteportmapping(self.port, 'TCP')
 
   def greet(self):
     msgtype = 'qpeer'
