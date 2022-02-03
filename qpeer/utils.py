@@ -173,7 +173,7 @@ class Utils:
     return json.dumps((msgtype,payload.decode()))
 
   def unpack_greet(self, payload):
-    unpack_payload = struct.unpack('<40s5s', payload)
+    unpack_payload = struct.unpack('<40s5s', payload.encode())
 
     return unpack_payload
 
