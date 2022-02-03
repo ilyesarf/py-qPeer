@@ -155,10 +155,13 @@ class Utils:
       r = upnp.getspecificportmapping(port, 'TCP')
       while r != None and port < 65536:
         port = port + 1
-        r = u.getspecificportmapping(port, 'TCP')
+        r = upnp.getspecificportmapping(port, 'TCP')
 
-      forward = u.addportmapping(port, 'TCP', localip, self.port, 'qPeer port forwarding %u' % port, '')
+      forward = upnp.addportmapping(port, 'TCP', localip, self.port, 'qPeer port forwarding %u' % port, '')
       return forward
+      
+    except Exception as e:
+      print(e)
 
   def greet(self):
     msgtype = 'qpeer'
