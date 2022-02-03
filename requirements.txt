@@ -3,3 +3,4 @@ uuid
 pycryptodome
 pyaes
 python-secrets
+miniupnpc
