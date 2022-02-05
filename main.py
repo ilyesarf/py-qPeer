@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 
-import sys
-sys.path.insert(1, 'qpeer')
-from node import *
-from errors import *
-from utils import *
+"""import sys
+sys.path.insert(1, 'qpeer')"""
+from qpeer.node import Server, Client
+from qpeer.errors import *
+from qpeer.utils import Utils
 utils = Utils()
 from multiprocessing import Process
 import socket
 import _thread
 import json
 import random
+import time
+import requests
 
 server = Server()
 
@@ -60,7 +62,7 @@ def run_client():
 			else:
 				peer = utils.decrypt_peer(random.choice(client.peers))
 				peerinfo = peer[1]
-				if peerinfo[0] == 0
+				if peerinfo[0] == 0:
 					try:
 						client.setup(peerinfo[1], peerinfo[2])
 					except socket.error:
@@ -115,7 +117,8 @@ def internet_check():
 			time.sleep(2)
 			req = requests.get('https://google.com', timeout=3)
 			return True
-		except:
+		except Exception as e:
+			print(e)
 			return False
 
 if __name__ == '__main__':

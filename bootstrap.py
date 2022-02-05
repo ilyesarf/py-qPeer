@@ -2,10 +2,10 @@
 
 # [!] RUN this only on your supernode
 
-import sys
-sys.path.insert(1, 'qpeer')
-from node import *
-from utils import Utils
+"""import sys
+sys.path.insert(1, 'qpeer')"""
+from qpeer.node import Server, Client
+from qpeer.utils import Utils
 import socket
 import time
 import requests
