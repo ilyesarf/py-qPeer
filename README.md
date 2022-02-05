@@ -100,6 +100,7 @@ A: qPeer uses UPnP to work behind NAT. Make sure that your router supports UPnP.
 
 <!-- ROADMAP -->
 ## TODO
+* Accepting incoming/outcoming requests behind NAT: UPnP (<b>*Under Testing*</b>)
 * Improving logging for debugging purposes (<b>*Urgent*</b>)
 * Using more than one method to bypass NAT (*Normal*)
 * Implementing AI for smarter peer discovery (*Normal*)
