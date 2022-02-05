@@ -66,9 +66,9 @@ It is the first open-source project in a series of decentralized projects under 
 
 ## Usage
 1. Install requirements (`pip install -r requirements.txt`)
-2. Change role to 1, for bootstrap peers in utils.py (line 51) 
+2. Change role to 1, for bootstrap peers in utils.py (line 53) 
 3. Launch bootstrap.py on your bootstrap node
-4. Set bootstrap peerip in main.py (line 56)
+4. Set bootstrap peerip in main.py (line 77)
 5. Launch main.py on your nodes
 
 ## Benchmarks
