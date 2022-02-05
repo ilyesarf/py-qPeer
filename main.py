@@ -26,7 +26,7 @@ def run_server():
 			while True:
 				conn, addr = soc.accept()
 				try:
-					firstmsg = json.loads(conn.recv(2048))
+					firstmsg = json.loads(conn.recv(2048).decode())
 					if firstmsg[0] == 'qpeer': #Check msgtype
 						_thread.start_new_thread(server.setup, (conn, firstmsg[1],))
 					else:
@@ -74,7 +74,7 @@ def run_client():
 					pass
 					
 		else: #Bootstrap
-			ip = '' #Set the supernode ip (hard-coded node)
+			ip = '10.38.4.31' #Set the supernode ip (hard-coded node)
 			port = 1691
 			try:
 				client.setup(ip, port)
@@ -101,7 +101,7 @@ def getback_client():
 def main():
 	p1 = Process(target=run_server)
 	p1.start()
-
+	
 	p2 = Process(target=run_client)
 	p2.start()
 
