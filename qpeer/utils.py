@@ -7,7 +7,7 @@ from Crypto.Cipher import PKCS1_OAEP
 from Crypto import Random
 from base64 import b64encode, b64decode
 from uuid import uuid4
-from errors import *
+from qpeer.errors import *
 import os
 import time
 import random
@@ -170,10 +170,10 @@ class Utils:
     msg = 'greet'
     payload = struct.pack('<40s5s', self.peerid.encode(), msg.encode())
 
-    return (msgtype,payload)
+    return json.dumps((msgtype,payload.decode())).encode()
 
   def unpack_greet(self, payload):
-    unpack_payload = struct.unpack('<40s5s', payload)
+    unpack_payload = struct.unpack('<40s5s', payload.encode())
 
     return unpack_payload
 

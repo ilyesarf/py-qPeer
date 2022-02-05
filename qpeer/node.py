@@ -1,13 +1,13 @@
 #!/usr/bin/python3
 
-from errors import *
+from qpeer.errors import *
+from qpeer.utils import Utils
 import socket
-import utils
 import struct
 import hashlib
 from base64 import b64encode, b64decode
 
-utils = utils.Utils()
+utils = Utils()
 
 class Client:
 	def __init__(self):
