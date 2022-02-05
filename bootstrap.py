@@ -2,29 +2,30 @@
 
 # [!] RUN this only on your supernode
 
-import sys
-sys.path.insert(1, 'qpeer')
-from node import *
-from utils import Utils
+"""import sys
+sys.path.insert(1, 'qpeer')"""
+from qpeer.node import Server, Client
+from qpeer.utils import Utils
 import socket
 import time
 import requests
+import json
 import _thread
 
 server = Server()
 utils = Utils()
-
+print(utils.peerip)
 def run_server():
 	try:
-		soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		soc.bind(('', 1691))
-		soc.listen(10)
 		forward = utils.forward_port()
 		if forward:
+			soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			soc.bind(('', 1691))
+			soc.listen(10)
 			while True:
 				conn, addr = soc.accept()
 				try:
-					firstmsg = conn.recv(2048)
+					firstmsg = json.loads(conn.recv(2048).decode())
 					if firstmsg[0] == 'qpeer': #Check msgtype
 						_thread.start_new_thread(server.setup, (conn, firstmsg[1],))
 					else:
@@ -40,6 +41,7 @@ def run_server():
 		
 	finally:
 		utils.close_port()
+		print("Closing port")
 
 def internet_check():
 	while True:
