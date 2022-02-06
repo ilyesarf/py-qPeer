@@ -35,7 +35,7 @@ class Client:
 
 		peerid, pubkey_pem = handle_greet()
 		
-		if peerid.decode() == hashlib.md5(pubkey_pem).hexdigest():
+		if peerid.decode() == hashlib.sha1(pubkey_pem).hexdigest():
 			pass
 		else:
 			raise IdError
@@ -165,7 +165,7 @@ class Server:
 				conn.close()
 
 		peerinfo = utils.dkenc_peerinfo(send_peerinfo(), int(AES_iv), AES_key.encode())
-		if peerid == hashlib.md5(b64decode(peerinfo[-1])).hexdigest():
+		if peerid == hashlib.sha1(b64decode(peerinfo[-1])).hexdigest():
 			pass
 		else:
 			raise IdError

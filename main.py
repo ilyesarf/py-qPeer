@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-"""import sys
-sys.path.insert(1, 'qpeer')"""
-from qpeer.node import Server, Client
-from qpeer.errors import *
-from qpeer.utils import Utils
+import sys
+sys.path.insert(1, 'qpeer')
+from node import Server, Client
+from errors import *
+from utils import Utils
 utils = Utils()
 from multiprocessing import Process
 import socket
@@ -46,61 +46,58 @@ def run_server():
 client = Client()
 
 def run_client():
-	while True:
-		if len(client.peers) > 0:
-			if len(client.temp_peers) > 0:
-				peer = random.choice(client.temp_peers)
+	if len(client.peers) > 0:
+		if len(client.temp_peers) > 0:
+			peer = random.choice(client.temp_peers)
+			try:
+				client.setup(peer[1], peer[2])
+				client.temp_peers.remove(peer)
+			except socket.error:
+				client.temp_peers.remove(peer)
+				client.offline_peers.append(peer)
+			except Exception as e:
+				print(e)
+				pass
+		else:
+			peer = utils.decrypt_peer(random.choice(client.peers))
+			peerinfo = peer[1]
+			if peerinfo[0] == 0:
 				try:
-					client.setup(peer[1], peer[2])
-					client.temp_peers.remove(peer)
+					client.setup(peerinfo[1], peerinfo[2])
 				except socket.error:
-					client.temp_peers.remove(peer)
-					client.offline_peers.append(peer)
+					utils.remove_peer(peer[0])
 				except Exception as e:
 					print(e)
 					pass
 			else:
-				peer = utils.decrypt_peer(random.choice(client.peers))
-				peerinfo = peer[1]
-				if peerinfo[0] == 0:
-					try:
-						client.setup(peerinfo[1], peerinfo[2])
-					except socket.error:
-						utils.remove_peer(peer[0])
-					except Exception as e:
-						print(e)
-						pass
-				else:
-					pass
-					
-		else: #Bootstrap
-			ip = '' #Set the supernode ip (hard-coded node)
-			port = 1691
-			try:
-				client.setup(ip, port)
-			except Exception as e:
-				print(e)
+				pass
+				
+	else: #Bootstrap
+		ip = 'localhost' #Set the supernode ip (hard-coded node)
+		port = 1691
+		try:
+			client.setup(ip, port)
+		except Exception as e:
+			print(e)
 
 def ping_client():
-	while True:
-		if len(client.peers) > 1:
-			peer = random.choice(client.peers)		
-			client.ping(peer[0])
-		else:
-			pass
+	if len(client.peers) > 1:
+		peer = random.choice(client.peers)		
+		client.ping(peer[0])
+	else:
+		pass
 
 def getback_client():
-	while True:
-		if len(client.offline_peers) > 0:
-			peer = random.choice(client.offline_peers)
-			client.getback_client(peer[0])
-		else:
-			pass
+	if len(client.offline_peers) > 0:
+		peer = random.choice(client.offline_peers)
+		client.getback_client(peer[0])
+	else:
+		pass
 
 
 def main():
-	p1 = Process(target=run_server)
-	p1.start()
+	"""p1 = Process(target=run_server)
+				p1.start()"""
 
 	p2 = Process(target=run_client)
 	p2.start()

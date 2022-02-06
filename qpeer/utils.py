@@ -68,7 +68,6 @@ class Utils:
 
   def getmyip(self):
 
-    upnp = miniupnpc.UPnP()
     self.upnp.discoverdelay = 10
     
     try:
