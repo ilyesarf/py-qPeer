@@ -2,10 +2,12 @@
 
 # [!] RUN this only on your supernode
 
-"""import sys
-sys.path.insert(1, 'qpeer')"""
-from qpeer.node import Server, Client
-from qpeer.utils import Utils
+import sys
+sys.path.insert(1, 'qpeer')
+from node import Server, Client
+from errors import *
+from utils import Utils
+utils = Utils()
 import socket
 import time
 import requests
@@ -13,7 +15,6 @@ import json
 import _thread
 
 server = Server()
-utils = Utils()
 print(utils.peerip)
 def run_server():
 	try:
