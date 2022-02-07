@@ -46,39 +46,40 @@ def run_server():
 client = Client()
 
 def run_client():
-	if len(client.peers) > 0:
-		if len(client.temp_peers) > 0:
-			peer = random.choice(client.temp_peers)
-			try:
-				client.setup(peer[1], peer[2])
-				client.temp_peers.remove(peer)
-			except socket.error:
-				client.temp_peers.remove(peer)
-				client.offline_peers.append(peer)
-			except Exception as e:
-				print(e)
-				pass
-		else:
-			peer = utils.decrypt_peer(random.choice(client.peers))
-			peerinfo = peer[1]
-			if peerinfo[0] == 0:
+	while True:
+		if len(client.peers) > 0:
+			if len(client.temp_peers) > 0:
+				peer = random.choice(client.temp_peers)
 				try:
-					client.setup(peerinfo[1], peerinfo[2])
+					client.setup(peer[1], peer[2])
+					client.temp_peers.remove(peer)
 				except socket.error:
-					utils.remove_peer(peer[0])
+					client.temp_peers.remove(peer)
+					client.offline_peers.append(peer)
 				except Exception as e:
 					print(e)
 					pass
 			else:
-				pass
-				
-	else: #Bootstrap
-		ip = 'localhost' #Set the supernode ip (hard-coded node)
-		port = 1691
-		try:
-			client.setup(ip, port)
-		except Exception as e:
-			print(e)
+				peer = utils.decrypt_peer(random.choice(client.peers)[0])
+				peerinfo = peer[1]
+				if peerinfo[0] == 0:
+					try:
+						client.setup(peerinfo[1], peerinfo[2])
+					except socket.error:
+						utils.remove_peer(peer[0])
+					except Exception as e:
+						print(e)
+						pass
+				else:
+					pass
+					
+		else: #Bootstrap
+			ip = '' #Set the supernode ip (hard-coded node)
+			port = 1691
+			try:
+				client.setup(ip, port)
+			except Exception as e:
+				print(e)
 
 def ping_client():
 	if len(client.peers) > 1:
@@ -96,8 +97,8 @@ def getback_client():
 
 
 def main():
-	"""p1 = Process(target=run_server)
-				p1.start()"""
+	p1 = Process(target=run_server)
+	p1.start()
 
 	p2 = Process(target=run_client)
 	p2.start()
