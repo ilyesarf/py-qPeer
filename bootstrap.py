@@ -15,7 +15,6 @@ import json
 import threading
 
 server = Server()
-print(utils.peerip)
 
 def run_server():
 	soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
