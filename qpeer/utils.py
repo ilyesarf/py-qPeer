@@ -67,18 +67,12 @@ class Utils:
     self.offline_peers = list()
 
   def getmyip(self):
-
-    self.upnp.discoverdelay = 10
-    
     try:
-      self.upnp.discover()  
-      self.upnp.selectigd()
-      ip = self.upnp.externalipaddress()
-
-      return ip
-    
-    except Exception as e:
-      print(e)    
+      ip = requests.get('https://api.ipify.org').content.decode('utf8')
+      return ip.strip()
+    except requests.exceptions.ConnectionError:
+      print("No internet connection!")
+      sys.exit()
 
   def RSA_keygen(self): #Generating RSA key pairs
     random_gen = Random.new().read
@@ -251,8 +245,11 @@ class Utils:
     enc_key = self.RSA_encrypt(key)
     peer = [peerid, b64encode(enc_peerinfo).decode(),iv,b64encode(enc_key).decode()]
     if self.check_peer(peerid) == False:
-      self.peers.append(peer)
-      self.write_peers(peer)
+      if self.check_peer(peerid, self.offline_peers) == False:
+        self.peers.append(peer)
+        self.write_peers(peer)
+      else:
+        self.getback_peer(peerid)
     else:
       raise LpeerError
       pass

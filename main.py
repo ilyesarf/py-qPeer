@@ -74,7 +74,7 @@ def run_client():
 				pass
 				
 	else: #Bootstrap
-		ip = '192.168.0.7' #Set the supernode ip (hard-coded node)
+		ip = '' #Set the supernode ip (hard-coded node)
 		port = 1691
 		try:
 			client.setup(ip, port)
@@ -96,13 +96,12 @@ def getback_client():
 		pass
 
 def main():
-	"""p1 = Process(target=run_server)
-				p1.start()"""
 
-	#run_server()
+	threading.Thread(target=run_server).start()
 	threading.Thread(target=run_client).start()
 	threading.Thread(target=ping_client).start()
 	threading.Thread(target=getback_client).start()
+
 def internet_check():
 	while True:
 		try:
@@ -118,3 +117,4 @@ if __name__ == '__main__':
 		main()
 	else:
 		print("No internet access")
+		sys.exit()
