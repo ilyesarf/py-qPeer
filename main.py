@@ -26,9 +26,9 @@ def run_server():
 			while True:
 				conn, addr = soc.accept()
 				try:
-					firstmsg = json.loads(conn.recv(2048).decode())
-					if firstmsg[0] == 'qpeer': #Check msgtype
-						threading.Thread(target=server.setup, args=(conn, firstmsg[1],)).start()
+					firstmsg = utils.unpack_greet(conn.recv(2048))
+					if firstmsg[0].decode() == 'qpeer': #Check msgtype
+						threading.Thread(target=server.setup, args=(conn, firstmsg[1].decode(),)).start()
 					else:
 						pass
 				except Exception as e:

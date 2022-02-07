@@ -131,18 +131,7 @@ class Server:
 		self.temp_peers = utils.temp_peers
 		self.offline_peers = utils.offline_peers
 
-	def setup(self, conn, firstmsg):
-		
-		def greet():
-			unpack_msg = utils.unpack_greet(firstmsg)
-			if len(unpack_msg) == 2 and str(unpack_msg[1].decode()) == 'greet':
-				peerid = unpack_msg[0]
-				return str(peerid.decode())
-			else:
-				raise GreetError
-				conn.close()
-		
-		peerid = greet()
+	def setup(self, conn, peerid):
 
 		def init():
 			conn.send(utils.init())

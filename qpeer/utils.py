@@ -7,7 +7,7 @@ from Crypto.Cipher import PKCS1_OAEP
 from Crypto import Random
 from base64 import b64encode, b64decode
 from uuid import uuid4
-from qpeer.errors import *
+from errors import *
 import os
 import time
 import random
@@ -56,7 +56,7 @@ class Utils:
 
     #Getting previous peers
     if os.path.isfile('peers.pkl'):
-      if len(open('peers.pkl', 'rb').read()) > 1:
+      if os.path.getsize('peers.pkl') > 0:
         self.peers = self.read_peers()
       else:
         self.peers = list()
@@ -160,13 +160,12 @@ class Utils:
 
   def greet(self):
     msgtype = 'qpeer'
-    msg = 'greet'
-    payload = struct.pack('<40s5s', self.peerid.encode(), msg.encode())
+    payload = struct.pack('<5s40s', msgtype.encode(), self.peerid.encode())
 
-    return json.dumps((msgtype,payload.decode())).encode()
+    return payload
 
   def unpack_greet(self, payload):
-    unpack_payload = struct.unpack('<40s5s', payload.encode())
+    unpack_payload = struct.unpack('<5s40s', payload)
 
     return unpack_payload
 
@@ -375,5 +374,3 @@ class Utils:
       else:
         raise IdError
         pass
-
-  
