@@ -90,7 +90,7 @@ def ping_client():
 def getback_client():
 	if len(client.offline_peers) > 0:
 		peer = random.choice(client.offline_peers)
-		client.getback_client(peer[0])
+		client.getback(peer[0])
 	else:
 		pass
 
