@@ -12,23 +12,24 @@ import socket
 import time
 import requests
 import json
-import _thread
+import threading
 
 server = Server()
 print(utils.peerip)
+
 def run_server():
+	soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	soc.bind(('', 1691))
+	soc.listen(10)
 	try:
 		forward = utils.forward_port()
 		if forward:
-			soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			soc.bind(('', 1691))
-			soc.listen(10)
 			while True:
 				conn, addr = soc.accept()
 				try:
 					firstmsg = json.loads(conn.recv(2048).decode())
 					if firstmsg[0] == 'qpeer': #Check msgtype
-						_thread.start_new_thread(server.setup, (conn, firstmsg[1],))
+						threading.Thread(target=server.setup, args=(conn, firstmsg[1],)).start()
 					else:
 						pass
 				except Exception as e:
@@ -42,7 +43,6 @@ def run_server():
 		
 	finally:
 		utils.close_port()
-		print("Closing port")
 
 def internet_check():
 	while True:
