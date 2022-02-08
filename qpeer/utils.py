@@ -158,13 +158,13 @@ class Utils:
   def close_port(self):
     self.upnp.deleteportmapping(self.port, 'TCP')
 
-  def greet(self):
+  def qpeer(self):
     msgtype = 'qpeer'
     payload = struct.pack('<5s40s', msgtype.encode(), self.peerid.encode())
 
     return payload
 
-  def unpack_greet(self, payload):
+  def unpack_qpeer(self, payload):
     unpack_payload = struct.unpack('<5s40s', payload)
 
     return unpack_payload
@@ -374,3 +374,13 @@ class Utils:
       else:
         raise IdError
         pass
+
+  def kenc_verify(self,msg,iv,key):
+    payload = b64encode(self.AES_encrypt(msg, int(iv), key))
+
+    return payload
+
+  def dkenc_verify(self,payload,iv,key):
+    msg = self.AES_decrypt(b64decode(payload),int(iv), key)
+
+    return msg

@@ -8,7 +8,6 @@ from utils import Utils
 utils = Utils()
 import socket
 import threading
-import json
 import random
 import time
 import requests
@@ -26,9 +25,11 @@ def run_server():
 			while True:
 				conn, addr = soc.accept()
 				try:
-					firstmsg = utils.unpack_greet(conn.recv(2048))
+					firstmsg = utils.unpack_qpeer(conn.recv(2048))
 					if firstmsg[0].decode() == 'qpeer': #Check msgtype
 						threading.Thread(target=server.setup, args=(conn, firstmsg[1].decode(),)).start()
+					elif firstmsg[0].decode() == 'exchange_peers' and utils.check_peer(firstmsg[1].decode()) == True:
+						threading.Thread(targe=server.exchange_peers, args=(conn, firstmsg[1].decode())).start()
 					else:
 						pass
 				except Exception as e:

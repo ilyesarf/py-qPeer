@@ -4,6 +4,7 @@ from qpeer.errors import *
 from qpeer.utils import Utils
 import socket
 import struct
+import os
 import hashlib
 from base64 import b64encode, b64decode
 
@@ -20,7 +21,7 @@ class Client:
 		soc.connect((peerip,peerport))
 		
 		def greet():
-			msg = utils.greet()
+			msg = utils.qpeer()
 			soc.send(msg)
 			recvd = soc.recv(2048)
 			if recvd:
@@ -182,4 +183,30 @@ class Server:
 		except Exception as e:
 			print(e)
 			conn.close()
-			
+	
+	def exchange_peers(self, conn, peerid):
+		
+		peer = utils.decrypt_peer(peerid)
+		AES_iv, AES_key = peer[:-2]
+		
+		verify_msg = os.urandom(32)
+		conn.send(utils.kenc_verify(verify_msg,AES_iv,AES_key))
+		verify_payload = conn.recv(2048)
+
+		if utils.dkenc_verify(verify_payload, AES_iv, AES_key) == msg:
+			conn.send(utils.share_peers(AES_iv, AES_key))
+			recvd_peers = conn.recv(8192)
+			if recvd_peers:
+				utils.save_peers(recvd_peers, AES_iv, AES_key)
+				conn.send(utils.bye())
+
+				bye_msg = conn.recv(2048)
+
+				if bye_msg == utils.bye():
+					conn.send(utils.bye())
+				else:
+					raise ByeError
+			else:
+				raise PeersError
+		else:
+			raise VerifyError
