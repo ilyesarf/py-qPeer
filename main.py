@@ -11,6 +11,7 @@ import threading
 import random
 import time
 import requests
+import os
 
 server = Server()
 
@@ -47,7 +48,7 @@ def run_server():
 client = Client()
 
 def run_client():
-	if len(client.peers) > 0:
+	if len(utils.peers[0]) > 1:
 		if len(client.temp_peers) > 0:
 			peer = random.choice(client.temp_peers)
 			try:
@@ -60,7 +61,9 @@ def run_client():
 				print(e)
 				pass
 		else:
-			peer = utils.decrypt_peer(random.choice(client.peers)[0])
+			print(client.peers)
+			peerid = random.choice(client.peers)
+			peer = utils.decrypt_peer(peerid[0])
 			peerinfo = peer[1]
 			if peerinfo[0] == 0:
 				try:
@@ -83,7 +86,7 @@ def run_client():
 
 def ping_client():
 	if len(client.peers) > 1:
-		peer = random.choice(client.peers)		
+		peer = random.choice(client.peers)
 		client.ping(peer[0])
 	else:
 		pass

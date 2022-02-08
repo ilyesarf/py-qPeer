@@ -56,7 +56,7 @@ class Utils:
 
     #Getting previous peers
     if os.path.isfile('peers.pkl'):
-      if os.path.getsize('peers.pkl') > 0:
+      if len(open('peers.pkl', 'rb').read()) > 1:
         self.peers = self.read_peers()
       else:
         self.peers = list()
@@ -290,7 +290,7 @@ class Utils:
 
   def decrypt_peer(self, peerid, peerlist=None): #Returning all peer info
     enc_peer = self.find_peer(peerid, peerlist)
-    peerid = enc_peer[0]
+    print(enc_peer)
     iv = enc_peer[2]
     key = self.decrypt_key(enc_peer)
     peerinfo = self.decrypt_peerinfo(key, enc_peer)
@@ -307,7 +307,7 @@ class Utils:
   def remove_peer(self, peerid): #If peer does not respond
     if self.check_peer(peerid) == True and self.check_peer(peerid, self.offline_peers) == False:
       del_peer = self.find_peer(peerid,self.peers)
-      peers = self.read_peers()
+      peers = self.peers
       peers.remove(del_peer)
 
       if len(peers) > 0:
