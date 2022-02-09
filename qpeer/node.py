@@ -100,7 +100,7 @@ class Client:
 
 	def ping(self, peerid,peerlist=None):
 		peer = utils.find_peer(peerid, peerlist)
-		peerinfo = utils.decrypt_peer(peer[0])[1]
+		peerinfo = utils.decrypt_peer(peer['peerip'])['peerinfo']
 		ip, port = peerinfo[1:3]
 		msg = utils.ping()
 		soc = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -110,11 +110,11 @@ class Client:
 			soc.send(msg)
 			soc.close()
 		except socket.error:
-			utils.remove_peer(peer[0])
+			utils.remove_peer(peer['peerid'])
 
 	def getback(self, peerid):
 		peer = utils.find_peer(peerid, self.offline_peers)
-		ip, port = peer[1:]
+		ip, port = peer['peerip'],peer['port']
 
 		soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -187,7 +187,7 @@ class Server:
 	def exchange_peers(self, conn, peerid):
 		
 		peer = utils.decrypt_peer(peerid)
-		AES_iv, AES_key = peer[:-2]
+		AES_iv, AES_key = peer['iv'], peer['key']
 		
 		verify_msg = os.urandom(32)
 		conn.send(utils.kenc_verify(verify_msg,AES_iv,AES_key))

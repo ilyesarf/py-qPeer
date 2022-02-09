@@ -19,7 +19,6 @@ import json
 import sys
 from binascii import hexlify, unhexlify
 import pyaes, secrets
-import random
 import miniupnpc
 
 class Utils:
@@ -33,35 +32,35 @@ class Utils:
       self.key, self.pubkey_pem = self.RSA_read()
 
     #Setting local peer
-    if os.path.isfile('lpeer.pkl'):
-      self.lpeer = self.read_peers(open('lpeer.pkl','rb'))[0] #Reading lpeer info
-      self.peerid = self.lpeer[0]
-      self.role = self.lpeer[1]
-      self.port = self.lpeer[3]
+    if os.path.isfile('lpeer.json'):
+      self.lpeer = self.read_lpeer() #Reading lpeer info
+      self.peerid = self.lpeer['peerid']
+      self.role = self.lpeer['role']
+      self.port = self.lpeer['port']
 
-      if self.lpeer[2] == self.getmyip():
-        self.peerip = self.lpeer[2]
+      if self.lpeer['peerip'] == self.getmyip():
+        self.peerip = self.lpeer['peerip']
       else:
         self.peerip = self.getmyip()
-        self.lpeer[2] = self.peerip
-        self.write_peers(self.lpeer, open('lpeer.pkl','wb')) #Update file
+        self.lpeer['peerip'] = self.peerip
+        self.write_lpeer(self.lpeer) #Update file
 
     else:
       self.peerid = hashlib.sha1(self.pubkey_pem).hexdigest()
       self.port = 1691
       self.peerip = self.getmyip()
       self.role = 0 #Change (1) for hard-coded nodes
-      self.lpeer = [self.peerid, self.role, self.peerip, self.port]
-      self.write_peers(self.lpeer, open('lpeer.pkl','wb')) #Saving local peer for future use
+      self.lpeer = {'peerid': self.peerid, 'role': self.role, 'peerip': self.peerip, 'port': self.port}
+      self.write_lpeer(self.lpeer) #Saving local peer for future use
 
     #Getting previous peers
-    if os.path.isfile('peers.pkl'):
-      if len(open('peers.pkl', 'rb').read()) > 1:
+    if os.path.isfile('peers.json'):
+      if len(open('peers.json', 'r').read()) > 1:
         self.peers = self.read_peers()
       else:
-        self.peers = list()
+        self.peers = {'peers': []}
     else:
-      self.peers = list()
+      self.peers = {'peers': []}
 
     self.temp_peers = list()
     self.offline_peers = list()
@@ -242,10 +241,10 @@ class Utils:
   def save_lpeer(self,peerid,peerinfo,iv,key): 
     enc_peerinfo = self.AES_encrypt(json.dumps(peerinfo),int(iv),key)
     enc_key = self.RSA_encrypt(key)
-    peer = [peerid, b64encode(enc_peerinfo).decode(),iv,b64encode(enc_key).decode()]
+    peer = {'peerid': peerid, 'peerinfo': b64encode(enc_peerinfo).decode(),'iv': iv,'key': b64encode(enc_key).decode()}
     if self.check_peer(peerid) == False:
       if self.check_peer(peerid, self.offline_peers) == False:
-        self.peers.append(peer)
+        self.peers['peers'].append(peer)
         self.write_peers(peer)
       else:
         self.getback_peer(peerid)
@@ -253,24 +252,47 @@ class Utils:
       raise LpeerError
       pass
 
-  def write_peers(self, peer, file=open('peers.pkl', 'ab')): #Save peers to a file
-    pickle.dump(peer, file)
+  def write_peers(self, peer): #Save peers to a file
+    if os.path.isfile('peers.json'):
+      peers = self.read_peers()
+      peers['peers'].append(peer)
+      file = open('peers.json', 'w')
+      json.dump(peers, file)
+    else:
+      peers = {'peers': []}
+      peers['peers'].append(peer)
+      file = open('peers.json', 'w')
+      json.dump(peers, file)
 
-  def read_peers(self,file=open('peers.pkl', 'rb')): #Read peers from file 
-    peers = [pickle.load(file)]
+  def update_peers(self, peers): #Update peers.json
+    file = open('peers.json', 'w')
+    json.dump(peers, file)
+
+  def read_peers(self): #Read peers from file 
+    file=open('peers.json', 'r')
+    peers = json.load(file)
     return peers
+
+  def write_lpeer(self, peer):
+    with open('lpeer.json', 'w') as file:
+      file.write(json.dumps(peer))
+
+  def read_lpeer(self):
+    with open('lpeer.json', 'r') as file:
+      lpeer = json.loads(file.read())
+    return lpeer
 
   def find_peer(self,peerid,peerlist=None): #Return Peer by peerid
     if peerlist == None:
-      for peer in self.peers:
-        if peer[0] == peerid:
+      for peer in self.peers['peers']:
+        if peer['peerid'] == peerid:
           return peer
           break
         else:
           continue
     else:
       for peer in peerlist:
-        if peer[0] == peerid:
+        if peer['peerid'] == peerid:
           return peer
           break
         else:
@@ -278,47 +300,43 @@ class Utils:
 
 
   def decrypt_key(self, peer): #Decrypting AES key (dpenc)
-    enc_key = peer[-1]
+    enc_key = peer['key']
     key = self.RSA_decrypt(b64decode(enc_key))
     
     return key
 
   def decrypt_peerinfo(self, key, peer): #Decrypting peerinfo (dkenc)
-    enc_peerinfo = peer[1] 
-    peerinfo = self.AES_decrypt(b64decode(enc_peerinfo),int(peer[2]),key)
+    enc_peerinfo = peer['peerinfo'] 
+    peerinfo = self.AES_decrypt(b64decode(enc_peerinfo),int(peer['iv']),key)
     return json.loads(peerinfo)
 
-  def decrypt_peer(self, peerid, peerlist=None): #Returning all peer info
-    enc_peer = self.find_peer(peerid, peerlist)
-    print(enc_peer)
-    iv = enc_peer[2]
+  def decrypt_peer(self, peerid): #Returning all peer info
+    enc_peer = self.find_peer(peerid)
+    iv = enc_peer['iv']
     key = self.decrypt_key(enc_peer)
     peerinfo = self.decrypt_peerinfo(key, enc_peer)
 
-    return [peerid, peerinfo, iv, key]
+    return {'peerid': peerid, 'peerinfo': peerinfo, 'iv': iv, 'key': key}
 
   def return_temp_peer(self, peerid): #Sending specific peer info for peer discovery
     peer = self.decrypt_peer(peerid)
-    peerinfo = peer[1]
+    peerinfo = peer['peerinfo']
     ip, port = peerinfo[1:3]
 
-    return [peerid, ip, port]
+    return {'peerid': peerid, 'peerip': ip, 'port': port}
 
   def remove_peer(self, peerid): #If peer does not respond
     if self.check_peer(peerid) == True and self.check_peer(peerid, self.offline_peers) == False:
-      del_peer = self.find_peer(peerid,self.peers)
+      del_peer = self.find_peer(peerid)
       peers = self.peers
-      peers.remove(del_peer)
+      peers['peers'].remove(del_peer)
 
-      if len(peers) > 0:
-        for peer in peers:
-          self.write_peers(peer)
+      if len(peers['peers']) > 0:
+        self.update_peers(peers)
       else:
-        file = open('peers.pkl', 'wb')
-        self.write_peers(peers, file)
-
+        self.update_peers(peers)
       self.offline_peers.append(self.return_temp_peer(peerid))
-      self.peers.remove(del_peer)
+      self.peers['peers'].remove(del_peer)
     else:
       pass
 
@@ -332,22 +350,22 @@ class Utils:
 
   def check_peer(self, peerid, peerlist=None): #Check if peer already exists
     if peerlist == None:
-      return any(peerid in peer for peer in self.peers)
+      return any(peerid in peer.values() for peer in self.peers['peers'])
     else:
-      return any(peerid in peer for peer in peerlist)
+      return any(peerid in peer.values() for peer in peerlist)
     
   def return_peers(self):
     peers = []
     if len(self.peers) <= 5:
       for peer in self.peers:
-        peerid = peer[0]
+        peerid = peer['peerid']
         temp_peer = self.return_temp_peer(peerid)
         peers.append(temp_peer)
     else:
       for i in range(5):
           peer = random.choice(self.peers)[:-2]
           if peer not in peers:
-            peerid = peer[0]
+            peerid = peer['peerid']
             temp_peer = self.return_temp_peer(peerid)
             peers.append(temp_peer)
           else:
@@ -365,8 +383,8 @@ class Utils:
     un_payload = b64decode(payload)
     peers = json.loads(self.AES_decrypt(un_payload, iv, key).decode())
     for peer in peers:
-      if peer[0] == self.peerid and peer[1] == self.peerip: #Check if the peer is me 
-        if self.check_peer(peer[0]) == False and self.check_peer(peer[0],self.temp_peers) == False and self.check_peer(peer[0], self.offline_peers) == False: #Check if peer already exists
+      if peer['peerid'] != self.peerid and peer['peerip'] != self.peerip: #Check if the peer is me 
+        if self.check_peer(peer['peerid']) == False and self.check_peer(peer['peerid'],self.temp_peers) == False and self.check_peer(peer['peerid'], self.offline_peers) == False: #Check if peer already exists
           self.temp_peers.append(peer)
         else:
           raise PeersError

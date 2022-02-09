@@ -48,11 +48,11 @@ def run_server():
 client = Client()
 
 def run_client():
-	if len(utils.peers[0]) > 1:
+	if len(client.peers['peers']) > 0:
 		if len(client.temp_peers) > 0:
 			peer = random.choice(client.temp_peers)
 			try:
-				client.setup(peer[1], peer[2])
+				client.setup(peer['peerip'], peer['port'])
 				client.temp_peers.remove(peer)
 			except socket.error:
 				client.temp_peers.remove(peer)
@@ -61,15 +61,14 @@ def run_client():
 				print(e)
 				pass
 		else:
-			print(client.peers)
-			peerid = random.choice(client.peers)
-			peer = utils.decrypt_peer(peerid[0])
-			peerinfo = peer[1]
+			enc_peer = random.choice(client.peers['peers'])
+			peer = utils.decrypt_peer(enc_peer['peerid'])
+			peerinfo = peer['peerinfo']
 			if peerinfo[0] == 0:
 				try:
 					client.setup(peerinfo[1], peerinfo[2])
 				except socket.error:
-					utils.remove_peer(peer[0])
+					utils.remove_peer(peer['peerid'])
 				except Exception as e:
 					print(e)
 					pass
@@ -85,16 +84,16 @@ def run_client():
 				print(e)
 
 def ping_client():
-	if len(client.peers) > 1:
+	if len(client.peers['peers']) > 1:
 		peer = random.choice(client.peers)
-		client.ping(peer[0])
+		client.ping(peer['peerid'])
 	else:
 		pass
 
 def getback_client():
 	if len(client.offline_peers) > 0:
 		peer = random.choice(client.offline_peers)
-		client.getback(peer[0])
+		client.getback(peer['peerid'])
 	else:
 		pass
 
