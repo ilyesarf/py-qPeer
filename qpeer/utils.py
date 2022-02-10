@@ -256,12 +256,12 @@ class Utils:
     if os.path.isfile('peers.json'):
       peers = self.read_peers()
       peers['peers'].append(peer)
-      file = open('peers.json', 'w')
+      file = open('peers.json', 'a')
       json.dump(peers, file)
     else:
       peers = {'peers': []}
       peers['peers'].append(peer)
-      file = open('peers.json', 'w')
+      file = open('peers.json', 'a')
       json.dump(peers, file)
 
   def update_peers(self, peers): #Update peers.json
