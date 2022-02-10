@@ -3,5 +3,6 @@ __pycache__/
 docker/
 *.pem
 *.pkl
+*.json
 *.sh
 
