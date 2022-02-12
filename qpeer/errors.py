@@ -1,10 +1,4 @@
 
-# Errors 
-# GreetError
-# PingError
-# LpeerError
-# PeersError
-# PubkeyError
 class GreetError(Exception):
   pass
 

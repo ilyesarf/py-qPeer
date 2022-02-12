@@ -98,9 +98,50 @@ class Client:
 				soc.close()
 		send_bye()
 
+	def exchange_peers(self, peerid):
+		peer = utils.decrypt_peer(peerid)
+		peerinfo = peer['peerinfo']
+		AES_iv, AES_key = peer['iv'], peer['key']
+		ip, port = peerinfo[1:3]
+		msg = utils.exchange_peers()
+		soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+		try:
+			soc.connect((ip, port))
+
+			#Verifying AES_key
+			soc.send(msg)
+			verify_payload = soc.recv(2048)
+			verify_msg = utils.dkenc_verify(verify_payload,iv,key)
+			soc.send(verify_msg)
+
+			#Exchanging peers
+			recvd_peers = conn.recv(8192)
+			if recvd_peers:
+				utils.save_peers(recvd_peers, AES_iv, AES_key)
+				conn.send(utils.share_peers(AES_iv, AES_key))
+			else:
+				raise PeersError
+
+			#Bye
+			bye_msg = conn.recv(2048)
+			if bye_msg == utils.bye():
+				conn.send(utils.bye())
+				soc.close()
+			else:
+				raise ByeError
+		
+		except socket.error:
+			print("Can't connect")
+		except Exception as e:
+			print(e)
+			soc.close()
+
+
+
+
 	def ping(self, peerid,peerlist=None):
-		peer = utils.find_peer(peerid, peerlist)
-		peerinfo = utils.decrypt_peer(peer['peerip'])['peerinfo']
+		peerinfo = utils.decrypt_peer(peerid)['peerinfo']
 		ip, port = peerinfo[1:3]
 		msg = utils.ping()
 		soc = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -110,7 +151,7 @@ class Client:
 			soc.send(msg)
 			soc.close()
 		except socket.error:
-			utils.remove_peer(peer['peerid'])
+			utils.remove_peer(peerid)
 
 	def getback(self, peerid):
 		peer = utils.find_peer(peerid, self.offline_peers)
@@ -188,25 +229,27 @@ class Server:
 		
 		peer = utils.decrypt_peer(peerid)
 		AES_iv, AES_key = peer['iv'], peer['key']
-		
-		verify_msg = os.urandom(32)
-		conn.send(utils.kenc_verify(verify_msg,AES_iv,AES_key))
-		verify_payload = conn.recv(2048)
+		try:
+			verify_msg = os.urandom(32)
+			conn.send(utils.kenc_verify(verify_msg,AES_iv,AES_key))
+			verify_payload = conn.recv(2048)
 
-		if utils.dkenc_verify(verify_payload, AES_iv, AES_key) == msg:
-			conn.send(utils.share_peers(AES_iv, AES_key))
-			recvd_peers = conn.recv(8192)
-			if recvd_peers:
-				utils.save_peers(recvd_peers, AES_iv, AES_key)
-				conn.send(utils.bye())
-
-				bye_msg = conn.recv(2048)
-
-				if bye_msg == utils.bye():
+			if utils.dkenc_verify(verify_payload, AES_iv, AES_key) == msg:
+				conn.send(utils.share_peers(AES_iv, AES_key))
+				recvd_peers = conn.recv(8192)
+				if recvd_peers:
+					utils.save_peers(recvd_peers, AES_iv, AES_key)
 					conn.send(utils.bye())
+
+					bye_msg = conn.recv(2048)
+
+					if bye_msg == utils.bye():
+						conn.send(utils.bye())
+					else:
+						raise ByeError
 				else:
-					raise ByeError
+					raise PeersError
 			else:
-				raise PeersError
-		else:
-			raise VerifyError
+				raise VerifyError
+		except Exception as e:
+			print(e)

@@ -168,6 +168,17 @@ class Utils:
 
     return unpack_payload
 
+  def exchange_peers(self):
+    msgtype = "exchange_peers"
+    payload = struct.pack('<15s40s', msgtype.encode(), self.peerid.encode())
+
+    return payload
+
+  def unpack_exchange_peers(self, payload):
+    unpack_payload = struct.unpack('<15s40s', payload)
+
+    return unpack_payload
+
   def bye(self):
     msg = 'bye'
     return msg.encode()
@@ -256,12 +267,12 @@ class Utils:
     if os.path.isfile('peers.json'):
       peers = self.read_peers()
       peers['peers'].append(peer)
-      file = open('peers.json', 'a')
+      file = open('peers.json', 'w')
       json.dump(peers, file)
     else:
       peers = {'peers': []}
       peers['peers'].append(peer)
-      file = open('peers.json', 'a')
+      file = open('peers.json', 'w')
       json.dump(peers, file)
 
   def update_peers(self, peers): #Update peers.json
@@ -310,8 +321,11 @@ class Utils:
     peerinfo = self.AES_decrypt(b64decode(enc_peerinfo),int(peer['iv']),key)
     return json.loads(peerinfo)
 
-  def decrypt_peer(self, peerid): #Returning all peer info
-    enc_peer = self.find_peer(peerid)
+  def decrypt_peer(self, peerid, peerlist=None): #Returning all peer info
+    if peerlist == None:
+      enc_peer = self.find_peer(peerid)
+    else:
+      enc_peer = self.find_peer(peerid, peerlist)
     iv = enc_peer['iv']
     key = self.decrypt_key(enc_peer)
     peerinfo = self.decrypt_peerinfo(key, enc_peer)
@@ -328,7 +342,7 @@ class Utils:
   def remove_peer(self, peerid): #If peer does not respond
     if self.check_peer(peerid) == True and self.check_peer(peerid, self.offline_peers) == False:
       del_peer = self.find_peer(peerid)
-      peers = self.peers
+      peers = self.read_peers()
       peers['peers'].remove(del_peer)
 
       if len(peers['peers']) > 0:
