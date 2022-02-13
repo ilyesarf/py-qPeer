@@ -130,9 +130,10 @@ class Client:
 				soc.close()
 			else:
 				raise ByeError
-		
+
 		except socket.error:
 			print("Can't connect")
+			utils.remove_peer(peerid)
 		except Exception as e:
 			print(e)
 			soc.close()
