@@ -56,7 +56,7 @@
 <b>qPeer</b> is a peer-to-peer routing protocol intended for running your decentralized networks.
 It is the first open-source project in a series of decentralized projects under the name Quirk.
 
-*<b>Note</b>: The project is gonna be rewritten in Golang*
+*<b>Note</b>: Can't make any further changes because of Python GIL.*
 
 ### Support
 
