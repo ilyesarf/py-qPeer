@@ -157,19 +157,19 @@ class Utils:
   def close_port(self):
     self.upnp.deleteportmapping(self.port, 'TCP')
 
-  def qpeer(self):
-    msgtype = 'qpeer'
+  def setup(self):
+    msgtype = 'setup'
     payload = struct.pack('<5s40s', msgtype.encode(), self.peerid.encode())
 
     return payload
 
-  def unpack_qpeer(self, payload):
+  def unpack_setup(self, payload):
     unpack_payload = struct.unpack('<5s40s', payload)
 
     return unpack_payload
 
   def exchange_peers(self):
-    msgtype = "exchange_peers"
+    msgtype = 'exchange_peers'
     payload = struct.pack('<15s40s', msgtype.encode(), self.peerid.encode())
 
     return payload
