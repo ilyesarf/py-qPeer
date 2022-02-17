@@ -26,7 +26,7 @@ def run_server():
 				conn, addr = soc.accept()
 				try:
 					firstmsg = utils.unpack_qpeer(conn.recv(2048))
-					if firstmsg[0].decode() == 'qpeer': #Check msgtype
+					if firstmsg[0].decode() == 'setup': #Check msgtype
 						threading.Thread(target=server.setup, args=(conn, firstmsg[1].decode(),)).start()
 					elif firstmsg[0].decode() == 'exchange_peers' and utils.check_peer(firstmsg[1].decode()) == True:
 						threading.Thread(targe=server.exchange_peers, args=(conn, firstmsg[1].decode())).start()
